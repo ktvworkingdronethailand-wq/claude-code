@@ -1,0 +1,53 @@
+{
+  "id": "claude-flow",
+  "publisher": "ruvnet",
+  "publisherDisplayName": "RuV",
+  "version": "3.5.15",
+  "minClaudeCodeVersion": "2.1.0",
+  "pricing": "free",
+  "category": "Agent Orchestration",
+  "tags": [
+    "orchestration",
+    "multi-agent",
+    "swarm",
+    "sparc",
+    "mcp",
+    "automation"
+  ],
+  "rating": 5,
+  "downloads": 20400,
+  "featured": true,
+  "verified": true,
+  "distribution": {
+    "npm": "ruflo@latest",
+    "github": "ruvnet/claude-flow",
+    "ipfs": true
+  },
+  "install": {
+    "methods": [
+      {
+        "name": "npm",
+        "command": "npm install ruflo@latest",
+        "description": "Install via npm"
+      },
+      {
+        "name": "npx",
+        "command": "npx ruflo@latest init --wizard",
+        "description": "Initialize with interactive wizard"
+      },
+      {
+        "name": "curl",
+        "command": "curl -fsSL https://cdn.jsdelivr.net/gh/ruvnet/claude-flow@main/scripts/install.sh | bash",
+        "description": "One-line install script"
+      },
+      {
+        "name": "full",
+        "command": "curl -fsSL https://cdn.jsdelivr.net/gh/ruvnet/claude-flow@main/scripts/install.sh | bash -s -- --full",
+        "description": "Full setup with MCP integration"
+      }
+    ]
+  },
+  "screenshots": [],
+  "changelog": "https://github.com/ruvnet/claude-flow/releases",
+  "support": "https://github.com/ruvnet/claude-flow/issues"
+}

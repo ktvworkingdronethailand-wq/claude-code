@@ -21,6 +21,7 @@
 | 05 | [Marketing & Sales Strategy](./05-marketing-strategy.md) | Brand, digital marketing, direct sales, partnerships, pricing, retention |
 | 06 | [Legal, Compliance & Financials](./06-legal-financials.md) | Business registration, CAAT regulations, insurance, financial projections, KPIs |
 | **07** | **[Verified Investor Financials](./07-INVESTOR-FINANCIALS-VERIFIED.md)** | **Official verified numbers from KTV business plan - investor-grade** |
+| **08** | **[Strategic Investment - SKYLLER](./08-STRATEGIC-INVESTMENT-SKYLLER.md)** | **KTV × SKYLLER partnership: USD 1.5-2M for 20%, growth plan, exit scenario** |
 
 ---
 

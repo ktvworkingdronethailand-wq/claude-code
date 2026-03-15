@@ -22,6 +22,7 @@
 | 06 | [Legal, Compliance & Financials](./06-legal-financials.md) | Business registration, CAAT regulations, insurance, financial projections, KPIs |
 | **07** | **[Verified Investor Financials](./07-INVESTOR-FINANCIALS-VERIFIED.md)** | **Official verified numbers from KTV business plan - investor-grade** |
 | **08** | **[Strategic Investment - SKYLLER](./08-STRATEGIC-INVESTMENT-SKYLLER.md)** | **KTV × SKYLLER partnership: USD 1.5-2M for 20%, growth plan, exit scenario** |
+| **09** | **[NDA - KTV × IFS Facility Services](./09-NDA-KTV-IFS-FACILITY-SERVICES.md)** | **Mutual NDA dated 7 Nov 2025, 3-year term, 24-month non-circumvention** |
 
 ---
 

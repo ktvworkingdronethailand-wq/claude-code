@@ -1,42 +1,41 @@
 /**
- * KTV Working Drone Thailand - Operations System
- * Entry point for the AI agent-powered drone operations platform
+ * KTV Working Drone Thailand - Unified Operations Platform
  *
- * Agents:
- *   1. Fleet Management    - Drone fleet, batteries, payloads, maintenance
- *   2. Job Lifecycle       - 13-stage job pipeline from lead to follow-up
- *   3. CRM & Sales         - Lead pipeline, client management, NPS
- *   4. Safety & Compliance - CAAT regulations, risk assessment, checklists
- *   5. Finance & Invoicing - Billing, revenue tracking, tax/royalty
- *   6. Pilot Operations    - Scheduling, certifications, flight hours
- *   7. Data Processing     - Pipelines, 4-copy backup, QA, delivery
+ * 7 AI Agents:
+ *   Fleet | Jobs | CRM | Safety | Finance | Pilots | Data
  *
- * Brain:
- *   - Event Bus            - Pub/sub reactive event system
- *   - Workflow Engine       - 10 automated multi-agent sequences
- *   - Trigger Manager       - 6 interval-based autonomous monitors
- *   - Operations Brain      - Central AI coordinator with decision logging
+ * Brain: Event Bus + 10 Workflows + 6 Triggers + Decision Engine
+ *
+ * Operations:
+ *   6 Service Lines | Scheduling & Dispatch | Client Onboarding
+ *   Supply Chain | Reporting & KPIs
+ *
+ * Integrations:
+ *   LINE (54M Thai users) | Odoo ERP | AWS S3 | DJI FlightHub
+ *
+ * JV Partners:
+ *   IFS Thailand (FM, up to 25%) | Skyller (O&G, up to 25%)
+ *   Smart Green Operations (ESG + Digital FM Platform)
  */
 
+export { KtvPlatform } from './operations/ktv-platform.js';
 export { KtvOrchestrator } from './agents/orchestrator.js';
 export * from './agents/index.js';
 export * from './types/index.js';
 export * from './workflows/index.js';
+export * from './operations/index.js';
+export * from './integrations/index.js';
+export * from './config/index.js';
 
-import { KtvOrchestrator } from './agents/orchestrator.js';
-import { OperationsBrain } from './workflows/brain.js';
+import { KtvPlatform } from './operations/ktv-platform.js';
 
 /**
- * Bootstrap the full KTV operations system with brain
+ * Bootstrap the full KTV operations platform
  */
-export async function bootstrap(): Promise<{ orchestrator: KtvOrchestrator; brain: OperationsBrain }> {
-  const orchestrator = new KtvOrchestrator();
-  await orchestrator.start();
-
-  const brain = new OperationsBrain(orchestrator);
-  await brain.start();
-
-  return { orchestrator, brain };
+export async function bootstrap(): Promise<KtvPlatform> {
+  const platform = new KtvPlatform();
+  await platform.start();
+  return platform;
 }
 
 // Run if executed directly
@@ -45,7 +44,7 @@ const isMainModule = typeof process !== 'undefined'
 
 if (isMainModule) {
   bootstrap().catch(err => {
-    console.error('Failed to start KTV Operations System:', err);
+    console.error('Failed to start KTV Operations Platform:', err);
     process.exit(1);
   });
 }

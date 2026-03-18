@@ -10,21 +10,33 @@
  *   5. Finance & Invoicing - Billing, revenue tracking, tax/royalty
  *   6. Pilot Operations    - Scheduling, certifications, flight hours
  *   7. Data Processing     - Pipelines, 4-copy backup, QA, delivery
+ *
+ * Brain:
+ *   - Event Bus            - Pub/sub reactive event system
+ *   - Workflow Engine       - 10 automated multi-agent sequences
+ *   - Trigger Manager       - 6 interval-based autonomous monitors
+ *   - Operations Brain      - Central AI coordinator with decision logging
  */
 
 export { KtvOrchestrator } from './agents/orchestrator.js';
 export * from './agents/index.js';
 export * from './types/index.js';
+export * from './workflows/index.js';
 
 import { KtvOrchestrator } from './agents/orchestrator.js';
+import { OperationsBrain } from './workflows/brain.js';
 
 /**
- * Bootstrap the KTV operations system
+ * Bootstrap the full KTV operations system with brain
  */
-export async function bootstrap(): Promise<KtvOrchestrator> {
+export async function bootstrap(): Promise<{ orchestrator: KtvOrchestrator; brain: OperationsBrain }> {
   const orchestrator = new KtvOrchestrator();
   await orchestrator.start();
-  return orchestrator;
+
+  const brain = new OperationsBrain(orchestrator);
+  await brain.start();
+
+  return { orchestrator, brain };
 }
 
 // Run if executed directly

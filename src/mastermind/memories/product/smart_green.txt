@@ -1,0 +1,18 @@
+# KTV Memory: smart_green
+# Created: 2026-03-18 05:41 UTC
+
+Smart Green Operations — Product Memory
+- Role: Smart, green operations platform linking KTV drones, ESG data, and FM workflows
+- Core functions:
+  * Orchestrates drone missions and work orders across multiple sites
+  * Captures telemetry: sqm cleaned, water/chemical consumption, time at height avoided, energy
+  * Produces cryptographically verifiable ESG metrics for GRESB and green building reporting
+- IFS integration:
+  * Embedded into IFS FM operational processes
+  * Used daily/weekly across live IFS sites
+  * KPIs visible in standard IFS client reports
+  * Key fields: sqm_cleaned, water_liters, chemical_liters, height_avoided_min, energy_kwh
+- Differentiators:
+  * Only drone ops platform positioned as GRESB-ready for FM operators
+  * Converts one-off jobs into recurring, data-rich FM service
+  * Future-proof ESG and digital FM layer for Thailand and SE Asia

@@ -1,0 +1,20 @@
+# KTV Memory: phase1_rollout
+# Created: 2026-03-18 05:41 UTC
+
+Phase 1 — IFS Thailand FM Rollout
+- Objective: Secure IFS as exclusive FM partner, launch pilot sites
+- Step 1: Sign JV / exclusivity and equity framework
+- Step 2: Select 1-3 initial IFS sites as flagship pilots
+  * Examples: commercial tower, campus, industrial facility
+- Step 3: Deploy KTV drones + Smart Green at pilot sites
+  * KPIs: sqm cleaned, safety incidents (target 0), time/cost vs rope access, ESG metrics
+- Step 4: Scale to broader IFS portfolio
+  * Revenue thresholds: THB 32M → 64M → 160M
+- Target safety incidents: 0
+- Pilot duration: 3 months
+- Priority sectors: commercial-tower, campus, healthcare
+- Strategy:
+  * Lead with IFS relationship
+  * Propose diverse pilot set (tower + campus + industrial)
+  * Use Smart Green ESG data as differentiator
+  * Target first revenue within 2-4 weeks of JV signing

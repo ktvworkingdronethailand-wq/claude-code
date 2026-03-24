@@ -15,3 +15,6 @@ export { OperationsBrain } from './brain.js';
 export type { BrainDecision } from './brain.js';
 
 export { ALL_WORKFLOWS } from './definitions.js';
+
+export { CoworkOrchestrator, COWORK_TEAMS, COWORK_COMMANDS, COWORK_WORKFLOWS } from './cowork.js';
+export type { CoworkTeam, CoworkTeamId, CoworkCommand, CoworkStep, CoworkSession, StrategyAgent } from './cowork.js';

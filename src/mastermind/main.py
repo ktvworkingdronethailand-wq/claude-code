@@ -18,6 +18,7 @@ from pathlib import Path
 from .orchestrator import create_mastermind
 from .memory import run_memory_command, memory_list
 from .seed import seed_all_memories
+from .cowork import handle_cowork, show_cowork_help
 
 
 BANNER = """
@@ -37,6 +38,10 @@ BANNER = """
 HELP_TEXT = """
 Commands:
   /agents     — List all 7 strategy agents
+  /cowork     — Unified team coordination (14 agents, 6 teams, 5 commands)
+  /cowork teams       — Show all 6 teams with agents and KPIs
+  /cowork <command>   — Run a coordinated multi-team sequence
+  /cowork stats       — Show agent and team statistics
   /memory     — Show memory file index
   /stats      — Show session statistics
   /reset      — Clear conversation history
@@ -44,6 +49,13 @@ Commands:
   /status     — Show system status
   /help       — Show this help
   /quit       — Exit
+
+CoWork Commands:
+  /cowork full-cycle      — End-to-end business cycle
+  /cowork new-partner     — New partner onboarding
+  /cowork daily-ops       — Daily operations briefing
+  /cowork scale-up        — Scale-up planning
+  /cowork smart-green     — Smart Green platform rollout
 
 Example queries:
   "Design Phase 1 FM rollout with IFS"
@@ -95,6 +107,9 @@ def run_repl():
             elif cmd == "/seed":
                 seed_all_memories()
                 print("[Mastermind] Memory seeded with baseline data.")
+            elif cmd == "/cowork":
+                cowork_args = user_input[len("/cowork"):].strip()
+                print(handle_cowork(cowork_args))
             elif cmd == "/status":
                 _show_status(mastermind)
             else:

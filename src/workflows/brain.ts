@@ -13,6 +13,7 @@ import { EventBus, KtvEvent, KtvEventType, createKtvEvent } from './event-bus.js
 import { WorkflowEngine, AgentExecutor } from './engine.js';
 import { ALL_WORKFLOWS } from './definitions.js';
 import { TriggerManager, createDefaultTriggers } from './triggers.js';
+import { CONNECTED_APP_WORKFLOWS, CONNECTED_AUTOMATIONS, EMAIL_TEMPLATES, CALENDAR_TEMPLATES, KTV_TEAM } from './connected-apps.js';
 
 // ── Decision Log ───────────────────────────────────────────
 
@@ -54,11 +55,12 @@ export class OperationsBrain {
     console.log('\n[Brain] KTV Operations Brain initializing...');
     this.running = true;
 
-    // 1. Register all workflow definitions
-    for (const workflow of ALL_WORKFLOWS) {
+    // 1. Register all workflow definitions (core + connected apps)
+    const allWorkflows = [...ALL_WORKFLOWS, ...CONNECTED_APP_WORKFLOWS];
+    for (const workflow of allWorkflows) {
       this.workflowEngine.register(workflow);
     }
-    console.log(`[Brain] ${ALL_WORKFLOWS.length} workflows registered`);
+    console.log(`[Brain] ${allWorkflows.length} workflows registered (${ALL_WORKFLOWS.length} core + ${CONNECTED_APP_WORKFLOWS.length} connected apps)`);
 
     // 2. Register automated triggers
     const executor = this.createExecutor();
@@ -218,6 +220,37 @@ export class OperationsBrain {
       description: 'Brain tracks workflow completions',
     });
 
+    // Connected apps: log email/calendar events
+    this.eventBus.subscribe({
+      id: 'brain-email-drafted',
+      eventType: 'email.draft.created',
+      handler: async (event) => {
+        this.logDecision(
+          `Email drafted: ${event.data.template}`,
+          `Draft created for ${event.data.to} — ${event.data.subject}`,
+          ['Email draft saved to Gmail'],
+          [],
+        );
+      },
+      description: 'Brain tracks email drafts created by automations',
+    });
+
+    this.eventBus.subscribe({
+      id: 'brain-calendar-created',
+      eventType: 'calendar.event.created',
+      handler: async (event) => {
+        this.logDecision(
+          `Calendar event: ${event.data.template}`,
+          `Event created: ${event.data.summary}`,
+          ['Calendar event added for team'],
+          [],
+        );
+      },
+      description: 'Brain tracks calendar events created by automations',
+    });
+
+    console.log(`[Brain] Connected apps: ${CONNECTED_AUTOMATIONS.length} automations, ${EMAIL_TEMPLATES.length} email templates, ${CALENDAR_TEMPLATES.length} calendar templates`);
+    console.log(`[Brain] Team contacts: ${Object.values(KTV_TEAM).map(c => c.name).join(', ')}`);
     console.log(`[Brain] ${this.eventBus.getSubscriptionCount()} reactive listeners active`);
   }
 

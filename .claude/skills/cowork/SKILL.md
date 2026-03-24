@@ -1,7 +1,7 @@
 ---
 name: cowork
 description: "KTV Working Drone Thailand unified agent team coordination. Orchestrates 14 AI agents across 6 specialist teams for end-to-end drone FM operations, market intelligence, revenue management, and Smart Green platform deployment."
-version: 1.0.0
+version: 2.0.0
 category: orchestration
 tags:
   - ktv
@@ -20,7 +20,7 @@ author: KTV Mastermind
 
 CoWork coordinates 14 AI agents organized into 6 specialist teams for KTV Working Drone Thailand's drone-enabled facility management operations. It bridges the Strategy Layer (Mastermind) and Operations Layer into automated professional teams.
 
-**14 Agents | 6 Teams | 5 Commands | 11 Workflows**
+**14 Agents | 6 Teams | 5 Commands | 11 Workflows | 9 Automations | 2 Connected Apps**
 
 ## Usage
 
@@ -40,6 +40,9 @@ CoWork coordinates 14 AI agents organized into 6 specialist teams for KTV Workin
 /cowork intelligence     — Drill into Market Intelligence team
 /cowork ecosystem        — Drill into Ecosystem Builder team
 /cowork revenue          — Drill into Revenue Operations team
+/cowork apps             — Show connected apps, team contacts, and 9 automations
+/cowork automations      — Same as /cowork apps
+/cowork connected        — Same as /cowork apps
 ```
 
 ## Instructions
@@ -202,6 +205,48 @@ Teams: Ecosystem > Delivery > Compliance > Intelligence (sequential)
 
 - FM scope (facade, window, solar, inspection via FM) -> Route through IFS
 - Non-FM (agriculture, media, survey, training academy) -> Direct KTV
+
+## Connected Apps & Automations
+
+CoWork integrates with Gmail and Google Calendar to automate communications and scheduling.
+
+**Connected Apps:**
+- Gmail: `matthew@ktvworkingdronethailand.com`
+- Google Calendar: primary (Asia/Bangkok)
+
+**Team Contacts:**
+- Matthew Peter James — Managing Director (`matthew@ktvworkingdronethailand.com`)
+- Thanvarat K. Agnew — Director (`thanvaratka@ktvworkingdronethailand.com`)
+- Krit Jitbanjong — Technical & Safety Manager (`krit.j@ktvworkingdronethailand.com`)
+
+### 9 Active Automations
+
+| # | Automation | Trigger | Apps | Team |
+|---|-----------|---------|------|------|
+| 1 | Welcome New Leads | `lead.created` | Gmail + Calendar | Growth |
+| 2 | Mission Crew Briefing | `mission.preflight.passed` | Gmail + Calendar | Delivery |
+| 3 | Site Assessment Scheduling | `job.created` | Calendar | Delivery |
+| 4 | Invoice Delivery | `finance.invoice.sent` | Gmail | Revenue |
+| 5 | Overdue Invoice Follow-up | `finance.invoice.overdue` | Gmail | Revenue |
+| 6 | Safety Incident Alert | `safety.incident.reported` | Gmail | Compliance |
+| 7 | Certification Expiry Alert | `pilot.certification.expiring` | Gmail + Calendar | Compliance |
+| 8 | Maintenance Calendar Block | `fleet.maintenance.due` | Calendar | Delivery |
+| 9 | Daily Ops Email Summary | `system.health.recovered` | Gmail + Calendar | All |
+
+### How Automations Work
+
+When a workflow event fires (e.g., `lead.created`), the connected app automation:
+
+1. **Gmail**: Drafts an email using the matching template (via `gmail_create_draft`)
+   - Templates include: lead welcome, mission briefing, invoice, safety alert, cert expiry, daily ops, overdue reminder
+2. **Calendar**: Creates a calendar event using the matching template (via `gcal_create_event`)
+   - Templates include: mission block, client meeting, site assessment, daily standup, maintenance window, cert deadline
+
+To execute an automation manually, describe the scenario and the agents will use the connected MCP tools directly:
+- `"Draft a welcome email for a new lead from Siam Piwat"`
+- `"Schedule a site assessment at Icon Siam for next Tuesday"`
+- `"Send the daily ops briefing email"`
+- `"Create a maintenance window for drone DJI-T50-001"`
 
 ## Example Prompts
 

@@ -18,3 +18,12 @@ export { ALL_WORKFLOWS } from './definitions.js';
 
 export { CoworkOrchestrator, COWORK_TEAMS, COWORK_COMMANDS, COWORK_WORKFLOWS } from './cowork.js';
 export type { CoworkTeam, CoworkTeamId, CoworkCommand, CoworkStep, CoworkSession, StrategyAgent } from './cowork.js';
+
+export {
+  KTV_TEAM, TIMEZONE, PRIMARY_CALENDAR,
+  EMAIL_TEMPLATES, CALENDAR_TEMPLATES,
+  CONNECTED_APP_WORKFLOWS, CONNECTED_AUTOMATIONS,
+  printConnectedAppsStatus, getAutomationsByTeam,
+  getEmailTemplate, getCalendarTemplate,
+} from './connected-apps.js';
+export type { TeamContact, EmailTemplate, CalendarEventTemplate, ConnectedAutomation } from './connected-apps.js';

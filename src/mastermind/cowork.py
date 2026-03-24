@@ -224,6 +224,7 @@ def show_cowork_help() -> str:
     lines.append("    /cowork teams        — Show all 6 teams with agents and KPIs")
     lines.append("    /cowork <command>    — Run a coordinated multi-team sequence")
     lines.append("    /cowork stats        — Show agent and team statistics")
+    lines.append("    /cowork apps         — Show connected apps and automations")
     lines.append("")
     lines.append("  Commands:")
     for cmd_id, cmd in COWORK_COMMANDS.items():
@@ -627,6 +628,144 @@ END OF QUICKSTART — ALL 14 AGENTS READY
 """
 
 
+# ── Connected Apps & Automations ─────────────────────────────
+
+KTV_TEAM_CONTACTS = {
+    "matthew": {
+        "name": "Matthew Peter James",
+        "email": "matthew@ktvworkingdronethailand.com",
+        "role": "Managing Director",
+        "teams": ["revenue", "growth", "ecosystem"],
+    },
+    "thanvarat": {
+        "name": "Thanvarat K. Agnew",
+        "email": "thanvaratka@ktvworkingdronethailand.com",
+        "role": "Director",
+        "teams": ["compliance", "delivery", "ecosystem"],
+    },
+    "krit": {
+        "name": "Krit Jitbanjong",
+        "email": "krit.j@ktvworkingdronethailand.com",
+        "role": "Technical & Safety Manager",
+        "teams": ["delivery", "compliance"],
+    },
+}
+
+CONNECTED_AUTOMATIONS = [
+    {
+        "id": "auto-lead-welcome",
+        "name": "Welcome New Leads",
+        "trigger": "lead.created",
+        "apps": ["Gmail", "Calendar"],
+        "description": "Draft welcome email + schedule intro meeting when new lead arrives",
+        "team": "growth",
+    },
+    {
+        "id": "auto-mission-briefing",
+        "name": "Mission Crew Briefing",
+        "trigger": "mission.preflight.passed",
+        "apps": ["Gmail", "Calendar"],
+        "description": "Email crew briefing + create mission calendar event",
+        "team": "delivery",
+    },
+    {
+        "id": "auto-site-assessment",
+        "name": "Site Assessment Scheduling",
+        "trigger": "job.created",
+        "apps": ["Calendar"],
+        "description": "Create site visit calendar event when new job is created",
+        "team": "delivery",
+    },
+    {
+        "id": "auto-invoice-email",
+        "name": "Invoice Delivery",
+        "trigger": "finance.invoice.sent",
+        "apps": ["Gmail"],
+        "description": "Draft invoice email to client when invoice is sent",
+        "team": "revenue",
+    },
+    {
+        "id": "auto-overdue-followup",
+        "name": "Overdue Invoice Follow-up",
+        "trigger": "finance.invoice.overdue",
+        "apps": ["Gmail"],
+        "description": "Send payment reminder when invoice becomes overdue",
+        "team": "revenue",
+    },
+    {
+        "id": "auto-safety-incident",
+        "name": "Safety Incident Alert",
+        "trigger": "safety.incident.reported",
+        "apps": ["Gmail"],
+        "description": "Emergency email to all leadership on safety incident",
+        "team": "compliance",
+    },
+    {
+        "id": "auto-cert-expiry",
+        "name": "Certification Expiry Alert",
+        "trigger": "pilot.certification.expiring",
+        "apps": ["Gmail", "Calendar"],
+        "description": "Email warning + calendar deadline for cert renewal",
+        "team": "compliance",
+    },
+    {
+        "id": "auto-maintenance-window",
+        "name": "Maintenance Calendar Block",
+        "trigger": "fleet.maintenance.due",
+        "apps": ["Calendar"],
+        "description": "Block calendar for drone maintenance window",
+        "team": "delivery",
+    },
+    {
+        "id": "auto-daily-ops-email",
+        "name": "Daily Ops Email Summary",
+        "trigger": "system.health.recovered",
+        "apps": ["Gmail", "Calendar"],
+        "description": "Morning email summary + recurring standup event",
+        "team": "all",
+    },
+]
+
+
+def show_connected_apps() -> str:
+    """Display connected apps, team contacts, and automations registry."""
+    lines = []
+    lines.append("")
+    lines.append("╔════════════════════════════════════════════════════════════════════╗")
+    lines.append("║          KTV CONNECTED APPS — Automations Registry               ║")
+    lines.append("╠════════════════════════════════════════════════════════════════════╣")
+    lines.append("║                                                                    ║")
+    lines.append("║  CONNECTED APPS                                                   ║")
+    lines.append("║    Gmail:    matthew@ktvworkingdronethailand.com                   ║")
+    lines.append("║    Calendar: primary (Asia/Bangkok)                                ║")
+    lines.append("║                                                                    ║")
+    lines.append("║  TEAM CONTACTS                                                    ║")
+
+    for contact in KTV_TEAM_CONTACTS.values():
+        lines.append(f"║    {contact['name']:<28} {contact['role']}")
+        lines.append(f"║      {contact['email']}")
+
+    lines.append("║                                                                    ║")
+    lines.append("╠════════════════════════════════════════════════════════════════════╣")
+    lines.append(f"║  AUTOMATIONS ({len(CONNECTED_AUTOMATIONS)} active)")
+    lines.append("║")
+
+    for auto in CONNECTED_AUTOMATIONS:
+        app_str = " + ".join(auto["apps"])
+        lines.append(f"║  {auto['name']}")
+        lines.append(f"║    Trigger: {auto['trigger']}")
+        lines.append(f"║    Apps: {app_str}  |  Team: {auto['team']}")
+        lines.append(f"║    {auto['description']}")
+        lines.append("║")
+
+    lines.append("╠════════════════════════════════════════════════════════════════════╣")
+    lines.append("║  Email Templates: 7   | Calendar Templates: 6                     ║")
+    lines.append("║  Connected Workflows: 5 | Total Automations: 9                    ║")
+    lines.append("╚════════════════════════════════════════════════════════════════════╝")
+    lines.append("")
+    return "\n".join(lines)
+
+
 def handle_cowork(args: str) -> str:
     """Handle the /cowork command with arguments."""
     args = args.strip().lower()
@@ -642,6 +781,9 @@ def handle_cowork(args: str) -> str:
 
     if args == "quickstart":
         return generate_quickstart()
+
+    if args == "apps" or args == "connected" or args == "automations":
+        return show_connected_apps()
 
     # Check if it's a command
     if args in COWORK_COMMANDS:

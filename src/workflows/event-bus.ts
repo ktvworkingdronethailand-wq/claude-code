@@ -38,7 +38,11 @@ export type KtvEventType =
   | 'finance.invoice.paid' | 'finance.invoice.overdue'
   // System events
   | 'system.health.degraded' | 'system.health.recovered'
-  | 'workflow.started' | 'workflow.completed' | 'workflow.failed';
+  | 'workflow.started' | 'workflow.completed' | 'workflow.failed'
+  // Connected app events (Gmail + Calendar)
+  | 'email.draft.created' | 'email.sent' | 'email.received'
+  | 'calendar.event.created' | 'calendar.event.updated' | 'calendar.event.cancelled'
+  | 'calendar.reminder.fired';
 
 export interface KtvEvent {
   id: string;

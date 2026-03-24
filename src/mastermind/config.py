@@ -74,6 +74,7 @@ IFS_PARTNER = {
 
 SMART_GREEN = {
     "name": "Smart Green Operations",
+    "url": "https://www.smartgreenoperations.com",
     "description": "Smart, green operations platform linking autonomous drones, ESG data, and FM workflows",
     "core_functions": [
         "Orchestrates drone missions and work orders across multiple sites",

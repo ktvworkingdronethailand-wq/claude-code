@@ -2,6 +2,7 @@
 # Created: 2026-03-18 05:41 UTC
 
 Smart Green Operations — Product Memory
+- Platform URL: https://www.smartgreenoperations.com
 - Role: Smart, green operations platform linking KTV drones, ESG data, and FM workflows
 - Core functions:
   * Orchestrates drone missions and work orders across multiple sites

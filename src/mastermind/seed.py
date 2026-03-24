@@ -11,7 +11,6 @@ def seed_all_memories():
     seeds = {
         "business/ktv_core.txt": _ktv_core(),
         "partners/ifs_thailand.txt": _ifs_partner(),
-        "partners/skyller_og.txt": _skyller_partner(),
         "jv/structure.txt": _jv_structure(),
         "finance/base_case.txt": _financial_base_case(),
         "product/smart_green.txt": _smart_green(),
@@ -35,7 +34,7 @@ def _ktv_core() -> str:
 - Parent: KTV Group (est. 1992, Norway, 66 countries)
 - Founder: Kennet Nilsen
 - HQ: Bangkok, Thailand
-- Ownership: 50% KTV (control), up to 25% IFS, up to 25% Skyller
+- Ownership: 50% KTV (control), up to 50% IFS
 - Mission: First-mover drone-enabled FM platform in Thailand
 - Service lines: Facade cleaning, building inspection, agricultural spraying, survey/mapping, media, training
 - Fleet: 16 drones (DJI Agras T50/T25, Matrice 350 RTK, M30T, Inspire 3, Mavic 3)
@@ -61,40 +60,21 @@ def _ifs_partner() -> str:
 """
 
 
-def _skyller_partner() -> str:
-    return """Skyller — O&G and Inspection Partner Memory
-- Role: Specialist O&G drone inspection and industrial cleaning partner
-- Backing: VC-backed, strong O&G and hazardous environment expertise
-- Channel position: Under IFS umbrella for Energy & Resources, Transport & Infrastructure, Manufacturing & Industry
-- Equity: Up to 25%, parallel to IFS, focused on O&G and inspection-led value
-- O&G scope: flares, tanks, vessels, pipelines, refineries, hazardous sites
-- Skyller leads inspection and O&G safety operations
-- KTV adds cleaning/surface treatment capability
-- Non-compete: Skyller does not build competing FM channel in Thailand
-- Narrative:
-  * Skyller: Premium O&G flight-ops and inspection player
-  * IFS: Steady pipeline of multi-site FM contracts
-  * KTV: Drone cleaning/surface treatment system and Smart Green data layer
-"""
-
-
 def _jv_structure() -> str:
-    return """KTV–IFS–Skyller JV Structure — Master Rules
+    return """KTV–IFS JV Structure — Master Rules
 - Ownership:
   * KTV Working Drone Thailand: 50% (control, technology owner, brand and operating framework)
-  * IFS Thailand: up to 25% (exclusive FM channel in Thailand)
-  * Skyller: up to 25% (exclusive O&G drone cleaning and inspection partner under IFS)
+  * IFS Thailand: up to 50% (exclusive FM channel in Thailand)
 - Governance:
   * KTV retains board control and acts as neutral technology anchor
-  * IFS and Skyller both have board representation and reserved matters
+  * IFS has board representation and reserved matters
   * Clear buyout/buyback mechanisms for equity changes
 - Channel rules:
   * FM in Thailand: All drone-enabled FM goes through IFS
-  * O&G/high-risk: Skyller as specialist partner, typically under IFS contracts
-  * No conflict: Skyller no competing FM channel; IFS no competing drone stack
+  * No conflict: IFS no competing drone stack
 - Equity milestones:
   * Earned via revenue/sqm, live integrated sites, safety/ESG performance
-  * Caps strict (max 25% each) unless Series A or restructuring agreed
+  * Caps strict (max 50% IFS) unless Series A or restructuring agreed
 """
 
 

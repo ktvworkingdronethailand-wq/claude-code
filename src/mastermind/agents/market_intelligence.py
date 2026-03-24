@@ -59,7 +59,7 @@ def handle(params: dict) -> str:
             "avg_sqm": 8_000,
             "cycles_per_year": 2,
             "price_range_thb": "40-60/sqm",
-            "route": "IFS (general) / Skyller (O&G/hazardous)",
+            "route": "IFS",
         },
         "aviation": {
             "airports_thailand": 38,
@@ -74,7 +74,7 @@ def handle(params: dict) -> str:
             "offshore_platforms": 300,
             "pipeline_km": 4_500,
             "price_range_thb": "60-120/sqm (premium hazardous)",
-            "route": "Skyller under IFS",
+            "route": "IFS",
         },
     }
 
@@ -93,7 +93,7 @@ def handle(params: dict) -> str:
         "recommendation": (
             "Phase 1 should focus on commercial towers and campuses via IFS — "
             "highest sqm density, recurring revenue, and clear ESG value proposition. "
-            "O&G via Skyller as high-margin premium tier."
+            "O&G via IFS as high-margin premium tier."
         ),
     }
 

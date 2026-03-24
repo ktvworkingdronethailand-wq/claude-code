@@ -14,7 +14,7 @@
  *   LINE (54M Thai users) | Odoo ERP | AWS S3 | DJI FlightHub
  *
  * JV Partners:
- *   IFS Thailand (FM, up to 25%) | Skyller (O&G, up to 25%)
+ *   IFS Thailand (FM, up to 50%)
  *   Smart Green Operations (ESG + Digital FM Platform)
  */
 

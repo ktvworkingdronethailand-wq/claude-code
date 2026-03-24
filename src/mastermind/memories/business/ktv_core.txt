@@ -6,7 +6,7 @@ KTV Working Drone Thailand — Core Profile
 - Parent: KTV Group (est. 1992, Norway, 66 countries)
 - Founder: Kennet Nilsen
 - HQ: Bangkok, Thailand
-- Ownership: 50% KTV (control), up to 25% IFS, up to 25% Skyller
+- Ownership: 50% KTV (control), up to 50% IFS
 - Mission: First-mover drone-enabled FM platform in Thailand
 - Service lines: Facade cleaning, building inspection, agricultural spraying, survey/mapping, media, training
 - Fleet: 16 drones (DJI Agras T50/T25, Matrice 350 RTK, M30T, Inspire 3, Mavic 3)

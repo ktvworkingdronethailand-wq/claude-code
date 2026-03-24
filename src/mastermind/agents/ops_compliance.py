@@ -85,7 +85,7 @@ def _check_feasibility(site: dict, check_caat: bool) -> dict:
 
     # Site type checks
     if site_type in ("o_and_g", "refinery", "chemical"):
-        warnings.append("Hazardous site — Skyller must lead operations with ATEX-aware procedures")
+        warnings.append("Hazardous site — KTV must use ATEX-aware procedures")
         warnings.append("Additional safety briefing and risk assessment required")
 
     if site_type == "healthcare":

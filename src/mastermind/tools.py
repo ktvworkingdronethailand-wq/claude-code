@@ -99,8 +99,8 @@ MARKET_INTELLIGENCE_TOOL = _agent_tool(
 PARTNER_STRATEGY_TOOL = _agent_tool(
     name="partner_strategy_architect",
     description=(
-        "Applies JV rules between KTV (50%), IFS (up to 25%), and Skyller (up to 25%). "
-        "For each opportunity, decides routing (IFS / Skyller / Direct KTV), "
+        "Applies JV rules between KTV (50%) and IFS (up to 50%). "
+        "For each opportunity, decides routing (IFS / Direct KTV), "
         "channel constraints, and equity milestone implications. "
         "Respects exclusivity, non-compete, and equity caps."
     ),
@@ -153,7 +153,7 @@ SMART_GREEN_TOOL = _agent_tool(
         },
         "integration_target": {
             "type": "string",
-            "enum": ["ifs", "client-direct", "skyller"],
+            "enum": ["ifs", "client-direct"],
             "description": "Which partner integration to design.",
         },
     },
@@ -207,7 +207,7 @@ DEAL_DESIGN_TOOL = _agent_tool(
     description=(
         "Turns strategy and numbers into decks, one-pagers, email text, and term-sheet sections. "
         "Produces structured artifacts that humans can drop into PowerPoint or email. "
-        "Aligns language with IFS and Skyller positioning. "
+        "Aligns language with IFS positioning. "
         "Reads factual JV and financial details from memory — never invents them."
     ),
     properties={
@@ -245,7 +245,7 @@ SALES_PLAYBOOK_TOOL = _agent_tool(
     description=(
         "Prioritises accounts (especially through IFS Thailand's FM portfolio), "
         "designs sector playbooks, and proposes pilot structures. "
-        "Returns ranked target lists with route (IFS/Skyller/Direct), "
+        "Returns ranked target lists with route (IFS/Direct), "
         "sqm and price suggestions, and sector-specific playbooks."
     ),
     properties={

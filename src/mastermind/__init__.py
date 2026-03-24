@@ -10,7 +10,7 @@ KTV Mastermind — Strategic AI Brain for KTV Working Drone Thailand
   6. Sales Playbook & Account Selector
   7. Operations & Compliance Mission Planner
 
-JV Partners: IFS Thailand (FM, up to 25%) | Skyller (O&G, up to 25%)
+JV Partner: IFS Thailand (FM, up to 50%)
 """
 
 __version__ = "1.0.0"

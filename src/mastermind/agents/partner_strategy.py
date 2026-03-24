@@ -4,11 +4,8 @@ Applies JV rules, routes opportunities, tracks equity milestones.
 """
 
 import json
-from ..config import JV_STRUCTURE, IFS_PARTNER, SKYLLER_PARTNER
+from ..config import JV_STRUCTURE, IFS_PARTNER
 
-
-# Sectors that route through Skyller (O&G/hazardous)
-SKYLLER_SECTORS = {"o_and_g", "oil-gas", "refinery", "pipeline", "offshore", "hazardous", "flare"}
 
 # Sectors that route through IFS (FM)
 IFS_SECTORS = set(s.lower().replace(" ", "-").replace("&", "and") for s in IFS_PARTNER["sectors"])
@@ -25,7 +22,6 @@ def handle(params: dict) -> str:
         "jv_structure": {
             "ktv": f"{JV_STRUCTURE['ktv']['stake']}% (control)",
             "ifs": f"up to {JV_STRUCTURE['ifs']['stake_max']}% (FM channel)",
-            "skyller": f"up to {JV_STRUCTURE['skyller']['stake_max']}% (O&G specialist)",
         },
     }
 
@@ -39,9 +35,7 @@ def handle(params: dict) -> str:
     # Channel rules reminder
     result["channel_rules"] = {
         "fm_thailand": "All drone-enabled FM goes through IFS within its FM portfolio",
-        "o_and_g": "O&G/high-risk inspection uses Skyller as specialist, typically under IFS contracts",
         "no_conflict": [
-            "Skyller does not build competing FM channel in Thailand",
             "IFS does not build competing drone cleaning stack outside JV",
         ],
     }
@@ -53,27 +47,13 @@ def _route_opportunity(opp: dict) -> dict:
     sector = (opp.get("sector", "") or "").lower().replace(" ", "-")
     service = (opp.get("service_type", "") or "").lower()
 
-    # O&G / hazardous → Skyller under IFS
-    if any(s in sector for s in SKYLLER_SECTORS) or "hazardous" in service:
-        return {
-            "route": "skyller",
-            "channel": "Under IFS umbrella",
-            "lead_partner": "Skyller",
-            "ktv_role": "Drone cleaning/surface treatment system",
-            "rationale": "O&G/hazardous site — Skyller leads inspection, KTV adds cleaning capability",
-            "constraints": [
-                "Must operate under IFS Energy & Resources contract structure",
-                "Skyller leads safety operations",
-                "Premium pricing applies (60-120 THB/sqm)",
-            ],
-        }
-
     # FM sectors → IFS
     is_fm = any(s in sector for s in IFS_SECTORS) or sector in {
         "commercial-towers", "offices", "campuses", "retail",
         "healthcare", "education", "airports", "condominiums",
+        "o_and_g", "oil-gas", "refinery", "industrial",
     }
-    if is_fm or service in {"facade-cleaning", "building-inspection", "solar-cleaning"}:
+    if is_fm or service in {"facade-cleaning", "building-inspection", "solar-cleaning", "inspection"}:
         return {
             "route": "ifs",
             "channel": "IFS FM portfolio",
@@ -93,7 +73,7 @@ def _route_opportunity(opp: dict) -> dict:
         "channel": "KTV direct",
         "lead_partner": "KTV Working Drone Thailand",
         "ktv_role": "Full service provider",
-        "rationale": "Outside IFS/Skyller exclusive scope — KTV operates directly",
+        "rationale": "Outside IFS exclusive scope — KTV operates directly",
         "constraints": ["Standard KTV pricing and terms apply"],
     }
 
@@ -112,12 +92,6 @@ def _assess_equity_impact(opp: dict, routing: dict) -> dict:
             "sqm_contribution": sqm,
             "next_milestone_thb": _next_milestone(revenue, triggers),
             "milestone_progress": f"This deal contributes {revenue:,.0f} THB toward IFS equity milestones",
-        }
-    elif route == "skyller":
-        return {
-            "partner": "Skyller",
-            "revenue_contribution": revenue,
-            "note": "Skyller equity earned via O&G revenue, site count, and safety performance",
         }
     return {"partner": "N/A", "note": "Direct KTV deals do not affect partner equity"}
 

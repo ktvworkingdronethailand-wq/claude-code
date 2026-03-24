@@ -122,13 +122,13 @@ test("FM routes to IFS", result["routing_decision"]["route"] == "ifs")
 test("Equity impact assessed", "equity_impact" in result)
 test("Channel rules present", "channel_rules" in result)
 
-# O&G opportunity → Skyller
+# O&G opportunity → IFS
 result = json.loads(partner_handle({
     "task": "Route O&G opportunity",
     "opportunity": {"client": "PTT", "sector": "o_and_g", "service_type": "inspection"},
 }))
-test("O&G routes to Skyller", result["routing_decision"]["route"] == "skyller")
-test("Skyller under IFS umbrella", "IFS" in result["routing_decision"]["channel"])
+test("O&G routes to IFS", result["routing_decision"]["route"] == "ifs")
+test("IFS FM portfolio channel", "IFS" in result["routing_decision"]["channel"])
 
 # Agricultural → Direct KTV
 result = json.loads(partner_handle({
@@ -208,7 +208,7 @@ result = json.loads(deal_handle({
     "artifact_type": "term-sheet",
 }))
 test("Term sheet generated", "key_terms" in result["artifact"])
-test("Parties listed", len(result["artifact"]["parties"]) == 3)
+test("Parties listed", len(result["artifact"]["parties"]) == 2)
 
 print("\n--- Sales Playbook Agent ---")
 from mastermind.agents.sales_playbook import handle as sales_handle
@@ -288,7 +288,7 @@ mastermind.reset_conversation()
 test("Conversation reset", len(mastermind.conversation) == 0)
 
 # Partner routing query
-result = mastermind.chat("Route this through IFS or Skyller: a commercial tower deal")
+result = mastermind.chat("Route this through IFS: a commercial tower deal")
 test("Partner routing works offline", "partner" in result.lower() or "ifs" in result.lower())
 
 # ── Seed Tests ────────────────────────────────────────────────
@@ -302,7 +302,6 @@ seed_all_memories()
 mem_list = memory_list()
 test("Seed creates business/ktv_core.txt", "ktv_core.txt" in mem_list)
 test("Seed creates partners/ifs_thailand.txt", "ifs_thailand.txt" in mem_list)
-test("Seed creates partners/skyller_og.txt", "skyller_og.txt" in mem_list)
 test("Seed creates jv/structure.txt", "structure.txt" in mem_list)
 test("Seed creates finance/base_case.txt", "base_case.txt" in mem_list)
 test("Seed creates product/smart_green.txt", "smart_green.txt" in mem_list)
@@ -316,7 +315,7 @@ test("KTV core has revenue target", "180,180,000" in ktv_core)
 
 jv = memory_view("jv/structure.txt")
 test("JV has 50% KTV", "50%" in jv)
-test("JV has equity caps", "25%" in jv)
+test("JV has equity caps", "50% IFS" in jv)
 
 # Re-seed doesn't overwrite
 seed_all_memories()

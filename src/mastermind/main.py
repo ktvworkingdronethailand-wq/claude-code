@@ -29,7 +29,7 @@ BANNER = """
 ║   7 Agents: Market | Partner | Smart Green | Finance            ║
 ║             Deal Design | Sales | Operations                    ║
 ║                                                                  ║
-║   JV: KTV 50% | IFS 25% | Skyller 25%                         ║
+║   JV: KTV 50% | IFS up to 50%                                 ║
 ║                                                                  ║
 ╚══════════════════════════════════════════════════════════════════╝
 """
@@ -123,7 +123,7 @@ def _show_agents():
      → TAM/SAM/SOM, segment analysis, opportunity ranking
 
   2. partner_strategy_architect
-     → JV routing (IFS/Skyller/Direct), equity milestones, channel rules
+     → JV routing (IFS/Direct), equity milestones, channel rules
 
   3. smart_green_product_orchestrator
      → ESG integration, GRESB readiness, telemetry design

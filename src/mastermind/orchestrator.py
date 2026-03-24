@@ -140,7 +140,7 @@ class KtvMastermind:
         # Determine which agents to invoke
         agent_triggers = {
             "market_intelligence_strategist": ["market", "tam", "sam", "opportunity", "sector", "competitor"],
-            "partner_strategy_architect": ["partner", "jv", "ifs", "skyller", "route", "equity", "channel"],
+            "partner_strategy_architect": ["partner", "jv", "ifs", "route", "equity", "channel"],
             "smart_green_product_orchestrator": ["smart green", "esg", "gresb", "telemetry", "sustainability"],
             "financial_model_capital_planner": ["financial", "irr", "npv", "payback", "revenue", "margin", "deal economics"],
             "deal_design_pitch_engineer": ["deck", "pitch", "email", "proposal", "one-pager", "term sheet"],

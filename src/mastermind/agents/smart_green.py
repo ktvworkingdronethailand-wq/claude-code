@@ -79,13 +79,6 @@ def _design_integration(site_type: str, target: str) -> dict:
                 "Monthly cycle → ESG summary pushed to IFS reporting",
             ],
         }
-    elif target == "skyller":
-        base_flow["skyller_integration"] = {
-            "workflow_embedding": "Smart Green captures O&G inspection + cleaning data",
-            "data_flow": "Inspection data → Smart Green → Skyller safety reports → IFS umbrella",
-            "safety_layer": "Enhanced safety monitoring for hazardous sites",
-        }
-
     site_configs = {
         "commercial-tower": {
             "typical_sqm": "8,000-25,000",

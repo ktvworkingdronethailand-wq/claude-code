@@ -1,19 +1,17 @@
 # KTV Memory: structure
 # Created: 2026-03-18 05:41 UTC
 
-KTV–IFS–Skyller JV Structure — Master Rules
+KTV–IFS JV Structure — Master Rules
 - Ownership:
   * KTV Working Drone Thailand: 50% (control, technology owner, brand and operating framework)
-  * IFS Thailand: up to 25% (exclusive FM channel in Thailand)
-  * Skyller: up to 25% (exclusive O&G drone cleaning and inspection partner under IFS)
+  * IFS Thailand: up to 50% (exclusive FM channel in Thailand)
 - Governance:
   * KTV retains board control and acts as neutral technology anchor
-  * IFS and Skyller both have board representation and reserved matters
+  * IFS has board representation and reserved matters
   * Clear buyout/buyback mechanisms for equity changes
 - Channel rules:
   * FM in Thailand: All drone-enabled FM goes through IFS
-  * O&G/high-risk: Skyller as specialist partner, typically under IFS contracts
-  * No conflict: Skyller no competing FM channel; IFS no competing drone stack
+  * No conflict: IFS no competing drone stack
 - Equity milestones:
   * Earned via revenue/sqm, live integrated sites, safety/ESG performance
-  * Caps strict (max 25% each) unless Series A or restructuring agreed
+  * Caps strict (max 50% IFS) unless Series A or restructuring agreed

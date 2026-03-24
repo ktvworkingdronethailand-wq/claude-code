@@ -33,11 +33,10 @@ COMPANY = {
 
 JV_STRUCTURE = {
     "ktv": {"stake": 50, "role": "Control, technology owner, brand and operating framework"},
-    "ifs": {"stake_max": 25, "role": "Exclusive FM channel in Thailand"},
-    "skyller": {"stake_max": 25, "role": "Exclusive O&G drone cleaning and inspection partner under IFS"},
+    "ifs": {"stake_max": 50, "role": "Exclusive FM channel in Thailand"},
     "governance": {
         "board_control": "ktv",
-        "board_seats": ["ktv", "ifs", "skyller"],
+        "board_seats": ["ktv", "ifs"],
         "reserved_matters": True,
         "buyout_mechanisms": True,
     },
@@ -69,23 +68,6 @@ IFS_PARTNER = {
         "We turn risky, manual facade cleaning into a digital, data-driven service.",
         "Your clients see measurable safety and ESG gains via Smart Green Operations.",
     ],
-}
-
-# ── Skyller ────────────────────────────────────────────────────
-
-SKYLLER_PARTNER = {
-    "name": "Skyller",
-    "role": "Specialist O&G drone inspection and industrial cleaning partner",
-    "backing": "VC-backed",
-    "expertise": ["O&G", "hazardous environments", "industrial inspection"],
-    "channel_position": "Under IFS umbrella for Energy & Resources, Transport, Manufacturing",
-    "equity_max": 25,
-    "og_scope": [
-        "O&G assets, flares, tanks, vessels, pipelines, refineries",
-        "Hazardous sites inspection and safety operations",
-        "KTV adds cleaning/surface treatment where relevant",
-    ],
-    "no_competing_fm_channel": True,
 }
 
 # ── Smart Green Operations ────────────────────────────────────

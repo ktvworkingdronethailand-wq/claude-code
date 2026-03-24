@@ -8,7 +8,7 @@ from pathlib import Path
 
 # ── Claude API ────────────────────────────────────────────────
 
-MODEL_NAME = os.getenv("KTV_MODEL", "claude-sonnet-4-20250514")
+MODEL_NAME = os.getenv("KTV_MODEL", "claude-sonnet-4-6")
 MAX_TOKENS = 4096
 ANTHROPIC_API_KEY = os.getenv("ANTHROPIC_API_KEY", "")
 

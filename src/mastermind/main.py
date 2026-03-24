@@ -39,6 +39,7 @@ HELP_TEXT = """
 Commands:
   /agents     — List all 7 strategy agents
   /cowork     — Unified team coordination (14 agents, 6 teams, 5 commands)
+  /cowork quickstart  — Full copy-paste onboarding brief for all agents
   /cowork teams       — Show all 6 teams with agents and KPIs
   /cowork <command>   — Run a coordinated multi-team sequence
   /cowork stats       — Show agent and team statistics

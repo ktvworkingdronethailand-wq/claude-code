@@ -31,7 +31,7 @@ COMPANY = {
     "address": "Rasa Two, 1818 Petchaburi Rd, Makkasan, Ratchathewi, Bangkok 10400",
     "website": "https://ktvworkingdrone.com",
     "leadership": {
-        "founding_director": {"name": "Thanvarat K. Agnew", "email": "thanvarat@ktvworkingdrone.com"},
+        "director": {"name": "Thanvarat K. Agnew", "email": "thanvarat@ktvworkingdrone.com"},
         "managing_director": {"name": "Matthew Peter James", "email": "matthew.james@ktvworkingdrone.com"},
     },
     "certifications": [

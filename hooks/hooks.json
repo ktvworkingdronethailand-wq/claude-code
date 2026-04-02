@@ -1,0 +1,144 @@
+{
+  "version": "1.0.0",
+  "description": "Claude Flow hook event configuration",
+  "hooks": {
+    "PreToolUse": {
+      "description": "Runs before a tool is executed",
+      "handlers": [
+        {
+          "matcher": "Bash",
+          "handler": ".claude/helpers/hook-handler.cjs",
+          "action": "pre-bash",
+          "timeout": 5000,
+          "description": "Validates and routes bash commands before execution"
+        },
+        {
+          "matcher": "Write|Edit|MultiEdit",
+          "handler": ".claude/helpers/hook-handler.cjs",
+          "action": "pre-edit",
+          "timeout": 5000,
+          "description": "Pre-processes file edits for security and quality checks"
+        }
+      ]
+    },
+    "PostToolUse": {
+      "description": "Runs after a tool completes",
+      "handlers": [
+        {
+          "matcher": "Write|Edit|MultiEdit",
+          "handler": ".claude/helpers/hook-handler.cjs",
+          "action": "post-edit",
+          "timeout": 10000,
+          "description": "Post-processes edits for learning and metrics"
+        },
+        {
+          "matcher": "Bash",
+          "handler": ".claude/helpers/hook-handler.cjs",
+          "action": "post-bash",
+          "timeout": 5000,
+          "description": "Captures bash output for learning"
+        }
+      ]
+    },
+    "UserPromptSubmit": {
+      "description": "Runs when user submits a prompt",
+      "handlers": [
+        {
+          "handler": ".claude/helpers/hook-handler.cjs",
+          "action": "route",
+          "timeout": 10000,
+          "description": "Routes prompts to appropriate agent tier (Booster/Haiku/Sonnet/Opus)"
+        }
+      ]
+    },
+    "SessionStart": {
+      "description": "Runs when a Claude Code session begins",
+      "handlers": [
+        {
+          "handler": ".claude/helpers/hook-handler.cjs",
+          "action": "session-restore",
+          "timeout": 15000,
+          "description": "Restores previous session state and context"
+        },
+        {
+          "handler": ".claude/helpers/auto-memory-hook.mjs",
+          "action": "import",
+          "timeout": 8000,
+          "description": "Imports memory from persistent storage"
+        }
+      ]
+    },
+    "SessionEnd": {
+      "description": "Runs when a session ends",
+      "handlers": [
+        {
+          "handler": ".claude/helpers/hook-handler.cjs",
+          "action": "session-end",
+          "timeout": 10000,
+          "description": "Saves session state and persists learnings"
+        }
+      ]
+    },
+    "Stop": {
+      "description": "Runs when agent processing stops",
+      "handlers": [
+        {
+          "handler": ".claude/helpers/auto-memory-hook.mjs",
+          "action": "sync",
+          "timeout": 10000,
+          "description": "Synchronizes memory state to persistent storage"
+        }
+      ]
+    },
+    "PreCompact": {
+      "description": "Runs before context compaction",
+      "handlers": [
+        {
+          "matcher": "manual",
+          "handler": ".claude/helpers/hook-handler.cjs",
+          "action": "compact-manual",
+          "description": "Handles manual compaction with full state preservation"
+        },
+        {
+          "matcher": "auto",
+          "handler": ".claude/helpers/hook-handler.cjs",
+          "action": "compact-auto",
+          "description": "Handles automatic compaction with priority-based state preservation"
+        }
+      ]
+    },
+    "SubagentStart": {
+      "description": "Runs when a subagent is spawned",
+      "handlers": [
+        {
+          "handler": ".claude/helpers/hook-handler.cjs",
+          "action": "status",
+          "timeout": 3000,
+          "description": "Tracks subagent lifecycle for swarm coordination"
+        }
+      ]
+    },
+    "SubagentStop": {
+      "description": "Runs when a subagent completes",
+      "handlers": [
+        {
+          "handler": ".claude/helpers/hook-handler.cjs",
+          "action": "post-task",
+          "timeout": 5000,
+          "description": "Collects subagent results and updates swarm state"
+        }
+      ]
+    },
+    "Notification": {
+      "description": "Runs on notification events",
+      "handlers": [
+        {
+          "handler": ".claude/helpers/hook-handler.cjs",
+          "action": "notify",
+          "timeout": 3000,
+          "description": "Routes notifications to appropriate handlers"
+        }
+      ]
+    }
+  }
+}

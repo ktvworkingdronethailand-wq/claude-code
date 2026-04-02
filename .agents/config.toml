@@ -1,0 +1,32 @@
+# Claude-Flow Agent Configuration
+# Main configuration for agent coordination and plugin settings
+
+[agent]
+name = "claude-flow"
+version = "3.5"
+description = "Multi-agent swarm coordination with claude-flow"
+
+[topology]
+type = "hierarchical-mesh"
+max_agents = 15
+consensus = "raft"
+
+[memory]
+backend = "hybrid"
+hnsw_enabled = true
+neural_enabled = true
+
+[model_routing]
+# 3-Tier Model Routing (ADR-026)
+tier1_handler = "agent-booster"    # <1ms, $0 - simple transforms
+tier2_handler = "haiku"            # ~500ms, $0.0002 - simple tasks
+tier3_handler = "sonnet"           # 2-5s, $0.003+ - complex reasoning
+complexity_threshold = 0.30        # Below = Tier 2, Above = Tier 3
+
+[skills]
+directory = "skills"
+
+[security]
+validate_inputs = true
+sanitize_paths = true
+allow_secrets = false

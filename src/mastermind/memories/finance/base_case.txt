@@ -1,0 +1,22 @@
+# KTV Memory: base_case
+# Created: 2026-03-18 05:41 UTC
+
+Financial Base Case — KTV Working Drone Thailand
+- Currency: THB (1 USD ≈ 35.5 THB)
+- Base price: 45 THB/sqm for drone cleaning
+- Market range: 15–70 THB/sqm depending on sector/complexity
+- Year 1:
+  * Gross revenue: THB 180,180,000
+  * Implied volume: ~4,004,000 sqm
+  * Net income: THB 112,283,616
+  * Free cash flow: THB 97,884,816
+- IRR: ~260-280% (base case)
+- Payback: ~9-11 months
+- Capital: USD 1,455,000 (THB 51,652,500)
+- Use of funds: Drones/equipment, working capital, marketing, insurance/legal, contingency
+- Tax: 7% VAT, 7% royalty to KTV Group, 20% corporate tax
+- Guardrails:
+  * Healthy gross margins required
+  * Payback under 18 months
+  * No fleet overcommit beyond planned capacity
+  * Equity milestones must be realistic

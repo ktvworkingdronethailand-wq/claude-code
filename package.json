@@ -1,0 +1,26 @@
+{
+  "name": "ktv-working-drone-thailand",
+  "version": "1.0.0",
+  "description": "AI agent-powered operations system for KTV Working Drone Thailand",
+  "main": "dist/src/index.js",
+  "types": "dist/src/index.d.ts",
+  "scripts": {
+    "build": "tsc",
+    "start": "node dist/src/index.js",
+    "test": "tsc && node dist/tests/agents.test.js && node dist/tests/workflows.test.js && node dist/tests/platform.test.js",
+    "lint": "tsc --noEmit"
+  },
+  "repository": {
+    "type": "git",
+    "url": "http://local_proxy@127.0.0.1:33027/git/ktvworkingdronethailand-wq/claude-code"
+  },
+  "keywords": ["drone", "thailand", "ktv", "ai-agents", "operations"],
+  "author": "KTV Working Drone Thailand",
+  "license": "ISC",
+  "dependencies": {
+    "ruflo": "^3.5.15"
+  },
+  "devDependencies": {
+    "typescript": "^5.4.0"
+  }
+}

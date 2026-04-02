@@ -1,0 +1,15 @@
+# KTV Memory: ktv_core
+# Created: 2026-03-18 05:41 UTC
+
+KTV Working Drone Thailand — Core Profile
+- Company: KTV Working Drone Thailand Co., Ltd.
+- Parent: KTV Group (est. 1992, Norway, 66 countries)
+- Founder: Kennet Nilsen
+- HQ: Bangkok, Thailand
+- Ownership: 50% KTV (control), up to 50% IFS
+- Mission: First-mover drone-enabled FM platform in Thailand
+- Service lines: Facade cleaning, building inspection, agricultural spraying, survey/mapping, media, training
+- Fleet: 16 drones (DJI Agras T50/T25, Matrice 350 RTK, M30T, Inspire 3, Mavic 3)
+- Key differentiator: Smart Green Operations (GRESB-ready ESG platform)
+- Target: 400+ buildings over 90m in Bangkok, quarterly cleaning cycles
+- Year 1 revenue target: THB 180,180,000

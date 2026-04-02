@@ -1,0 +1,24 @@
+# KTV Memory: compliance_thailand
+# Created: 2026-03-18 05:41 UTC
+
+Operations & Compliance — Thailand Drone FM
+- Regulator: CAAT (Civil Aviation Authority of Thailand)
+- Key limits:
+  * Max altitude: 90m
+  * Airport buffer: 9km
+  * Min insurance: THB 1,000,000
+  * Registration: required above 250g
+  * Pilot license: required (RPL)
+  * UAOC: required
+- Validation checklist:
+  * Site location type (urban, suburban, industrial, O&G)
+  * Height profiles and proximity to sensitive infrastructure
+  * Permits, clearances, building/FM team coordination
+- Safety priorities:
+  * Work-at-height risk reduction (zero incidents target)
+  * Track avoided work-at-height hours via Smart Green
+- Capacity rules:
+  * Align fleet/crew with financial capacity and Phase 1 targets
+  * Update when new SOPs or CAAT guidance introduced
+- Fleet: 16 drones across cleaning, inspection, and media categories
+- Daily flight limits: 8h per pilot, 80h monthly max

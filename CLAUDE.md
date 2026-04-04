@@ -1,188 +1,132 @@
-# Claude Code Configuration - RuFlo V3
+# CLAUDE.md
 
-## Behavioral Rules (Always Enforced)
+This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
-- Do what has been asked; nothing more, nothing less
-- NEVER create files unless they're absolutely necessary for achieving your goal
-- ALWAYS prefer editing an existing file to creating a new one
-- NEVER proactively create documentation files (*.md) or README files unless explicitly requested
-- NEVER save working files, text/mds, or tests to the root folder
-- Never continuously check status after spawning a swarm — wait for results
-- ALWAYS read a file before editing it
-- NEVER commit secrets, credentials, or .env files
+## Project Overview
 
-## File Organization
-
-- NEVER save to root folder — use the directories below
-- Use `/src` for source code files
-- Use `/tests` for test files
-- Use `/docs` for documentation and markdown files
-- Use `/config` for configuration files
-- Use `/scripts` for utility scripts
-- Use `/examples` for example code
-
-## Project Architecture
-
-- Follow Domain-Driven Design with bounded contexts
-- Keep files under 500 lines
-- Use typed interfaces for all public APIs
-- Prefer TDD London School (mock-first) for new code
-- Use event sourcing for state changes
-- Ensure input validation at system boundaries
-
-### Project Config
-
-- **Topology**: hierarchical-mesh
-- **Max Agents**: 15
-- **Memory**: hybrid
-- **HNSW**: Enabled
-- **Neural**: Enabled
+**ktv-working-drone-thailand** — AI agent-powered autonomous drone operations platform for KTV Working Drone Thailand (KTV Group, est. 1992, Norway, 66 franchises). TypeScript + Python, orchestrated via RuFlo V3.
 
 ## Build & Test
 
 ```bash
-# Build
-npm run build
-
-# Test
-npm test
-
-# Lint
-npm run lint
+npm run build          # tsc → dist/
+npm run start          # node dist/src/index.js
+npm test               # build + run all 3 test suites sequentially
+npm run lint           # tsc --noEmit (type checking only)
 ```
 
-- ALWAYS run tests after making code changes
-- ALWAYS verify build succeeds before committing
+Tests run as compiled JS: `dist/tests/agents.test.js`, `dist/tests/workflows.test.js`, `dist/tests/platform.test.js`. There is no test runner — each file self-executes assertions.
 
-## Security Rules
+Python Mastermind tests: `python src/mastermind/tests/mastermind.test.py`
 
-- NEVER hardcode API keys, secrets, or credentials in source files
-- NEVER commit .env files or any file containing secrets
-- Always validate user input at system boundaries
-- Always sanitize file paths to prevent directory traversal
-- Run `npx ruflo@latest security scan` after security-related changes
+## Architecture
 
-## Concurrency: 1 MESSAGE = ALL RELATED OPERATIONS
+### Three-Layer System
 
-- All operations MUST be concurrent/parallel in a single message
-- Use Claude Code's Task tool for spawning agents, not just MCP
-- ALWAYS batch ALL todos in ONE TodoWrite call (5-10+ minimum)
-- ALWAYS spawn ALL agents in ONE message with full instructions via Task tool
-- ALWAYS batch ALL file reads/writes/edits in ONE message
-- ALWAYS batch ALL Bash commands in ONE message
+```
+Layer 1: 7 Operational Agents (src/agents/)
+  All extend KtvAgent base class, communicate via AgentMessage
+  Fleet | Jobs | CRM | Safety | Finance | Pilots | Data
+         ↓
+Layer 2: Operations Brain (src/workflows/brain.ts)
+  EventBus → TriggerManager → WorkflowEngine → 10+ workflows
+  OperationsBrain is the central decision engine connecting agents to events
+         ↓
+Layer 3: Business Operations (src/operations/)
+  KtvPlatform (unified facade) → ServiceOps | Scheduling | Onboarding | SupplyChain | Reporting
+```
 
-## Swarm Orchestration
+**Entry point:** `src/index.ts` → `bootstrap()` → `KtvPlatform.start()` which initializes orchestrator, brain, and all operations systems.
 
-- MUST initialize the swarm using CLI tools when starting complex tasks
-- MUST spawn concurrent agents using Claude Code's Task tool
-- Never use CLI tools alone for execution — Task tool agents do the actual work
-- MUST call CLI tools AND Task tool in ONE message for complex work
+### Key Patterns
 
-### 3-Tier Model Routing (ADR-026)
+- **KtvOrchestrator** (`src/agents/orchestrator.ts`): Registry of all 7 agents. Routes messages between agents, runs health checks (60s intervals), calculates system status (healthy → degraded → warning → critical).
+- **EventBus** (`src/workflows/event-bus.ts`): Pub/sub for KTV events. Triggers fire workflows which dispatch to agents.
+- **CoworkOrchestrator** (`src/workflows/cowork-orchestrator.ts`): 14 team members across 6 teams (Sales, Ops, Finance, Marketing, Legal, Product) with connected app automations.
+- **ConnectedApps** (`src/workflows/connected-apps.ts`): Gmail + Google Calendar automation templates for all teams.
 
-| Tier | Handler | Latency | Cost | Use Cases |
-|------|---------|---------|------|-----------|
-| **1** | Agent Booster (WASM) | <1ms | $0 | Simple transforms (var→const, add types) — Skip LLM |
-| **2** | Haiku | ~500ms | $0.0002 | Simple tasks, low complexity (<30%) |
-| **3** | Sonnet/Opus | 2-5s | $0.003-0.015 | Complex reasoning, architecture, security (>30%) |
+### External Integrations (src/integrations/)
 
-- Always check for `[AGENT_BOOSTER_AVAILABLE]` or `[TASK_MODEL_RECOMMENDATION]` before spawning agents
-- Use Edit tool directly when `[AGENT_BOOSTER_AVAILABLE]`
+- **LINE** — Customer messaging (Thai market)
+- **Odoo** — ERP connector
+- **AWS S3** — Data storage
+- **DJI FlightHub** — Fleet telemetry
 
-## Swarm Configuration & Anti-Drift
+### Type System
 
-- ALWAYS use hierarchical topology for coding swarms
-- Keep maxAgents at 6-8 for tight coordination
-- Use specialized strategy for clear role boundaries
-- Use `raft` consensus for hive-mind (leader maintains authoritative state)
-- Run frequent checkpoints via `post-task` hooks
-- Keep shared memory namespace for all agents
+All types in `src/types/index.ts` (~387 lines). Key domains: AgentRole/AgentMessage, Drone/Fleet, Job (13 stages), Lead/Client, RiskAssessment/WeatherCheck, Invoice, Pilot, DataJob.
+
+### Configuration (src/config/)
+
+- `ktv-operations.ts` — Company info, 6 service lines with pricing, CAAT regulations (90m max altitude, 9km airport buffer), fleet config (16 DJI drones), financial rules (7% VAT, 7% royalty, 20% corp tax)
+- `jv-partners.ts` — IFS Thailand JV structure, Smart Green ESG platform, financial projections
+
+### Python Mastermind (src/mastermind/)
+
+Parallel strategy system with 7 expert agents (Market, Partner, SmartGreen, Financial, Deal, Sales, Operations). Entry: `main.py` → `orchestrator.py`. Has its own `memory.py`, `tools.py`, `prompts.py`.
+
+### One Bangkok Initiative (docs/one-bangkok/)
+
+Strategic deal documentation: battle-plan, market-intelligence, partnership, financial-model, pitch-deck, compliance (CAAT), smart-green integration, sales-playbook. Key metrics: THB 23.97M ACV, 77.7% EBITDA, 3.6mo payback.
+
+## Behavioral Rules
+
+- Do what has been asked; nothing more, nothing less
+- NEVER create files unless absolutely necessary — prefer editing existing files
+- NEVER proactively create docs/README files unless explicitly requested
+- NEVER save files to root folder — use `src/`, `tests/`, `docs/`, `config/`, `scripts/`, `examples/`
+- ALWAYS read a file before editing it
+- ALWAYS run tests after code changes, verify build before committing
+- NEVER commit secrets, credentials, or .env files
+
+## File Organization
+
+| Directory | Purpose |
+|-----------|---------|
+| `src/agents/` | 7 operational agents + orchestrator + base class |
+| `src/workflows/` | EventBus, WorkflowEngine, OperationsBrain, triggers, connected apps |
+| `src/operations/` | KtvPlatform, service ops, scheduling, onboarding, supply chain, reporting |
+| `src/integrations/` | LINE, Odoo, S3, FlightHub connectors |
+| `src/types/` | All TypeScript interfaces |
+| `src/config/` | Business config (operations, JV partners) |
+| `src/mastermind/` | Python strategy agents |
+| `tests/` | Test suites (agents, workflows, platform) |
+| `docs/` | Business documentation and One Bangkok initiative |
+| `.claude/agents/` | 25 Claude Code agent templates |
+| `.claude/skills/` | 33 registered skills |
+
+## Code Style
+
+- TypeScript strict mode, ES2022 target, Node16 module resolution
+- Use `.js` extensions in all import paths (required for Node16 ESM)
+- Keep files under 500 lines
+- Use typed interfaces for all public APIs
+- Domain-Driven Design with bounded contexts
+
+## Swarm & Multi-Agent Orchestration
+
+RuFlo V3 manages multi-agent coordination. Config in `.mcp.json` and `.claude-flow/config.yaml`.
 
 ```bash
+# Initialize swarm
 npx ruflo@latest swarm init --topology hierarchical --max-agents 8 --strategy specialized
-```
 
-## Swarm Execution Rules
+# Memory operations
+npx ruflo@latest memory store --key "key" --value "val" --namespace ns
+npx ruflo@latest memory search --query "search term"
 
-- ALWAYS use `run_in_background: true` for all agent Task calls
-- ALWAYS put ALL agent Task calls in ONE message for parallel execution
-- After spawning, STOP — do NOT add more tool calls or check status
-- Never poll TaskOutput or check swarm status — trust agents to return
-- When agent results arrive, review ALL results before proceeding
-
-## V3 CLI Commands
-
-### Core Commands
-
-| Command | Subcommands | Description |
-|---------|-------------|-------------|
-| `init` | 4 | Project initialization |
-| `agent` | 8 | Agent lifecycle management |
-| `swarm` | 6 | Multi-agent swarm coordination |
-| `memory` | 11 | AgentDB memory with HNSW search |
-| `task` | 6 | Task creation and lifecycle |
-| `session` | 7 | Session state management |
-| `hooks` | 17 | Self-learning hooks + 12 workers |
-| `hive-mind` | 6 | Byzantine fault-tolerant consensus |
-
-### Quick CLI Examples
-
-```bash
-npx ruflo@latest init --wizard
-npx ruflo@latest agent spawn -t coder --name my-coder
-npx ruflo@latest swarm init --v3-mode
-npx ruflo@latest memory search --query "authentication patterns"
+# Diagnostics
 npx ruflo@latest doctor --fix
 ```
 
-## Available Agents (60+ Types)
+- Topology: hierarchical-mesh, max 15 agents, hybrid memory with HNSW
+- Use `raft` consensus for hive-mind coordination
+- Batch all agent spawns in one message for parallel execution
+- After spawning agents, stop and wait for results — never poll
 
-### Core Development
-`coder`, `reviewer`, `tester`, `planner`, `researcher`
+## Security
 
-### Specialized
-`security-architect`, `security-auditor`, `memory-specialist`, `performance-engineer`
-
-### Swarm Coordination
-`hierarchical-coordinator`, `mesh-coordinator`, `adaptive-coordinator`
-
-### GitHub & Repository
-`pr-manager`, `code-review-swarm`, `issue-tracker`, `release-manager`
-
-### SPARC Methodology
-`sparc-coord`, `sparc-coder`, `specification`, `pseudocode`, `architecture`
-
-## Memory Commands Reference
-
-```bash
-# Store (REQUIRED: --key, --value; OPTIONAL: --namespace, --ttl, --tags)
-npx ruflo@latest memory store --key "pattern-auth" --value "JWT with refresh" --namespace patterns
-
-# Search (REQUIRED: --query; OPTIONAL: --namespace, --limit, --threshold)
-npx ruflo@latest memory search --query "authentication patterns"
-
-# List (OPTIONAL: --namespace, --limit)
-npx ruflo@latest memory list --namespace patterns --limit 10
-
-# Retrieve (REQUIRED: --key; OPTIONAL: --namespace)
-npx ruflo@latest memory retrieve --key "pattern-auth" --namespace patterns
-```
-
-## Quick Setup
-
-```bash
-claude mcp add claude-flow -- npx -y ruflo@latest
-npx ruflo@latest daemon start
-npx ruflo@latest doctor --fix
-```
-
-## Claude Code vs CLI Tools
-
-- Claude Code's Task tool handles ALL execution: agents, file ops, code generation, git
-- CLI tools handle coordination via Bash: swarm init, memory, hooks, routing
-- NEVER use CLI tools as a substitute for Task tool agents
-
-## Support
-
-- Documentation: https://github.com/ruvnet/claude-flow
-- Issues: https://github.com/ruvnet/claude-flow/issues
+- Never hardcode API keys or credentials
+- Validate user input at system boundaries
+- Sanitize file paths to prevent directory traversal
+- Run `npx ruflo@latest security scan` after security-related changes

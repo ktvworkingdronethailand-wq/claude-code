@@ -124,6 +124,51 @@ npx ruflo@latest doctor --fix
 - Batch all agent spawns in one message for parallel execution
 - After spawning agents, stop and wait for results — never poll
 
+## Supabase Dashboard
+
+Master operations dashboard at `docs/dashboard/ktv-master-dashboard.html` — shows all 14 agents, 6 CoWork teams, KPIs, brain decisions, and activity feed in real-time.
+
+### Environment Variables
+
+```bash
+SUPABASE_URL=https://xxx.supabase.co
+SUPABASE_ANON_KEY=eyJ...
+SUPABASE_SERVICE_ROLE_KEY=eyJ...   # optional, enables writes
+```
+
+### Setup Steps
+
+1. Create Supabase project at supabase.com
+2. Run `scripts/supabase/001_ktv_dashboard_schema.sql` in the SQL Editor
+3. Enable realtime on `agent_status`, `team_activity`, `brain_decisions` tables
+4. Set the three env vars above
+5. Open `docs/dashboard/ktv-master-dashboard.html` → paste URL + anon key → Connect
+
+### Integration API
+
+```typescript
+import { createSupabaseClient, AgentTelemetry, AGENT_TEAM_MAP } from './integrations/supabase.js';
+
+const sb = createSupabaseClient();           // returns null if env vars missing
+const telemetry = new AgentTelemetry(sb);
+
+await telemetry.reportAgentHealth(health, agentName, team, 'operational');
+await telemetry.reportDecision(decision);
+await telemetry.reportKpi('Revenue Operations', 'ebitda_margin_pct', 55, '%', '55', 'on-track');
+await telemetry.reportActivity('Growth Engine', 'crm-sales', 'Lead qualified', 'One Bangkok · THB 23.97M');
+```
+
+### Tables
+
+| Table | Purpose |
+|-------|---------|
+| `agent_status` | Live heartbeat — 1 row per agent, upserted every 60s |
+| `workflow_events` | Every workflow execution and automation trigger |
+| `brain_decisions` | OperationsBrain decision log with reasoning + outcome |
+| `kpi_snapshots` | Current KPI values per team (upserted, 1 row per team+kpi) |
+| `mission_log` | Append-only drone mission history |
+| `team_activity` | Rolling feed of agent actions across all 6 CoWork teams |
+
 ## Security
 
 - Never hardcode API keys or credentials

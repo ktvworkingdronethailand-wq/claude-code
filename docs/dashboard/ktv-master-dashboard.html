@@ -1,0 +1,591 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>KTV Working Drone Thailand — Master Operations Dashboard</title>
+<style>
+  :root {
+    --bg: #0a0e1a;
+    --card: #111827;
+    --card2: #1a2235;
+    --border: #1e2d45;
+    --accent: #00d4ff;
+    --accent2: #7c3aed;
+    --green: #10b981;
+    --yellow: #f59e0b;
+    --red: #ef4444;
+    --text: #e2e8f0;
+    --muted: #64748b;
+    --font: 'Inter', 'Segoe UI', system-ui, sans-serif;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: var(--bg); color: var(--text); font-family: var(--font); font-size: 13px; }
+
+  /* ── HEADER ─── */
+  .header {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 14px 24px; background: var(--card);
+    border-bottom: 1px solid var(--border);
+    position: sticky; top: 0; z-index: 100;
+  }
+  .header-brand { display: flex; align-items: center; gap: 12px; }
+  .header-brand .logo {
+    width: 36px; height: 36px; border-radius: 8px;
+    background: linear-gradient(135deg, var(--accent), var(--accent2));
+    display: flex; align-items: center; justify-content: center;
+    font-size: 18px;
+  }
+  .header-brand h1 { font-size: 16px; font-weight: 700; letter-spacing: -0.3px; }
+  .header-brand span { font-size: 11px; color: var(--muted); }
+  .header-right { display: flex; align-items: center; gap: 16px; }
+  .pulse { width: 8px; height: 8px; border-radius: 50%; background: var(--green); animation: pulse 2s infinite; }
+  @keyframes pulse { 0%,100%{opacity:1;} 50%{opacity:0.4;} }
+  .status-badge {
+    font-size: 11px; font-weight: 600; padding: 3px 10px; border-radius: 20px;
+    background: rgba(16,185,129,0.15); color: var(--green); border: 1px solid rgba(16,185,129,0.3);
+  }
+  .last-sync { font-size: 11px; color: var(--muted); }
+
+  /* ── LAYOUT ─── */
+  .main { padding: 20px 24px; }
+  .grid-4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; margin-bottom: 20px; }
+  .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; margin-bottom: 20px; }
+  .grid-2 { display: grid; grid-template-columns: repeat(2, 1fr); gap: 14px; margin-bottom: 20px; }
+  .grid-main { display: grid; grid-template-columns: 2fr 1fr; gap: 14px; margin-bottom: 20px; }
+  .span-2 { grid-column: span 2; }
+
+  /* ── CARDS ─── */
+  .card { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 16px; }
+  .card-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; }
+  .card-title { font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; color: var(--muted); }
+  .card-badge { font-size: 10px; padding: 2px 8px; border-radius: 10px; }
+
+  /* ── KPI STAT CARDS ─── */
+  .stat-value { font-size: 28px; font-weight: 800; line-height: 1; margin-bottom: 4px; }
+  .stat-label { font-size: 11px; color: var(--muted); }
+  .stat-delta { font-size: 11px; margin-top: 6px; }
+  .stat-delta.up { color: var(--green); }
+  .stat-delta.down { color: var(--red); }
+  .stat-delta.neutral { color: var(--yellow); }
+  .accent-blue { color: var(--accent); }
+  .accent-purple { color: var(--accent2); }
+  .accent-green { color: var(--green); }
+  .accent-yellow { color: var(--yellow); }
+
+  /* ── AGENTS GRID ─── */
+  .agents-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 8px; }
+  .agent-card {
+    background: var(--card2); border: 1px solid var(--border); border-radius: 10px;
+    padding: 12px 10px; text-align: center; cursor: pointer; transition: border-color 0.2s;
+  }
+  .agent-card:hover { border-color: var(--accent); }
+  .agent-card.active { border-color: rgba(16,185,129,0.5); }
+  .agent-card.error { border-color: rgba(239,68,68,0.5); }
+  .agent-icon { font-size: 22px; margin-bottom: 6px; }
+  .agent-name { font-size: 10px; font-weight: 600; line-height: 1.3; margin-bottom: 4px; }
+  .agent-team { font-size: 9px; color: var(--muted); margin-bottom: 6px; }
+  .agent-dot { width: 6px; height: 6px; border-radius: 50%; margin: 0 auto; }
+  .dot-active { background: var(--green); box-shadow: 0 0 6px var(--green); }
+  .dot-idle { background: var(--yellow); }
+  .dot-error { background: var(--red); }
+  .dot-offline { background: var(--muted); }
+  .agent-tasks { font-size: 9px; color: var(--muted); margin-top: 4px; }
+
+  /* ── STRATEGY AGENTS ─── */
+  .strategy-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 8px; }
+  .strategy-card {
+    background: linear-gradient(135deg, rgba(124,58,237,0.1), rgba(0,212,255,0.05));
+    border: 1px solid rgba(124,58,237,0.25); border-radius: 10px; padding: 12px 10px; text-align: center;
+  }
+  .strategy-card .agent-name { font-size: 9px; }
+
+  /* ── TEAMS ─── */
+  .team-row { display: flex; align-items: center; gap: 10px; padding: 10px 0; border-bottom: 1px solid var(--border); }
+  .team-row:last-child { border-bottom: none; }
+  .team-dot { width: 10px; height: 10px; border-radius: 3px; flex-shrink: 0; }
+  .team-name { font-weight: 600; font-size: 12px; flex: 1; }
+  .team-agents { font-size: 11px; color: var(--muted); }
+  .team-kpi { font-size: 11px; text-align: right; }
+  .team-kpi strong { display: block; font-size: 13px; }
+
+  /* ── WORKFLOW / ACTIVITY FEED ─── */
+  .feed-item { display: flex; gap: 10px; padding: 8px 0; border-bottom: 1px solid var(--border); align-items: flex-start; }
+  .feed-item:last-child { border-bottom: none; }
+  .feed-dot { width: 8px; height: 8px; border-radius: 50%; margin-top: 3px; flex-shrink: 0; }
+  .feed-dot.success { background: var(--green); }
+  .feed-dot.pending { background: var(--yellow); }
+  .feed-dot.failure { background: var(--red); }
+  .feed-content { flex: 1; }
+  .feed-title { font-size: 12px; font-weight: 500; }
+  .feed-meta { font-size: 10px; color: var(--muted); margin-top: 2px; }
+  .feed-time { font-size: 10px; color: var(--muted); white-space: nowrap; }
+
+  /* ── KPI TABLE ─── */
+  .kpi-row { display: flex; align-items: center; gap: 8px; padding: 7px 0; border-bottom: 1px solid var(--border); }
+  .kpi-row:last-child { border-bottom: none; }
+  .kpi-name { flex: 1; font-size: 11px; }
+  .kpi-value { font-size: 12px; font-weight: 700; min-width: 70px; text-align: right; }
+  .kpi-bar-wrap { flex: 1; height: 4px; background: var(--border); border-radius: 2px; overflow: hidden; }
+  .kpi-bar { height: 100%; border-radius: 2px; transition: width 0.5s ease; }
+  .kpi-status { font-size: 9px; padding: 1px 6px; border-radius: 6px; min-width: 58px; text-align: center; }
+  .on-track { background: rgba(16,185,129,0.15); color: var(--green); }
+  .at-risk   { background: rgba(245,158,11,0.15); color: var(--yellow); }
+  .off-track { background: rgba(239,68,68,0.15); color: var(--red); }
+
+  /* ── BRAIN STATUS ─── */
+  .brain-grid { display: grid; grid-template-columns: repeat(4,1fr); gap: 8px; }
+  .brain-stat { background: var(--card2); border-radius: 8px; padding: 12px; text-align: center; }
+  .brain-val { font-size: 24px; font-weight: 800; }
+  .brain-lbl { font-size: 10px; color: var(--muted); margin-top: 2px; }
+
+  /* ── GUARDRAILS ─── */
+  .guardrail-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 8px; }
+  .guardrail { background: var(--card2); border-radius: 8px; padding: 10px 12px; display: flex; align-items: center; gap: 8px; }
+  .guardrail-icon { font-size: 16px; }
+  .guardrail-name { font-size: 11px; font-weight: 500; flex: 1; }
+  .guardrail-val { font-size: 11px; font-weight: 700; }
+  .pass { color: var(--green); }
+  .warn { color: var(--yellow); }
+
+  /* ── SUPABASE SETUP PANEL ─── */
+  .setup-panel { background: linear-gradient(135deg,rgba(0,212,255,0.05),rgba(124,58,237,0.05)); border: 1px solid rgba(0,212,255,0.2); border-radius: 12px; padding: 20px; }
+  .setup-panel h3 { font-size: 14px; font-weight: 700; margin-bottom: 12px; }
+  .setup-step { display: flex; gap: 10px; margin-bottom: 10px; }
+  .setup-num { width: 22px; height: 22px; border-radius: 50%; background: var(--accent); color: var(--bg); font-size: 11px; font-weight: 700; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+  .setup-text { font-size: 12px; line-height: 1.5; }
+  code { background: rgba(255,255,255,0.08); padding: 1px 5px; border-radius: 4px; font-family: 'JetBrains Mono', monospace; font-size: 11px; }
+
+  /* ── TABS ─── */
+  .tabs { display: flex; gap: 4px; margin-bottom: 16px; }
+  .tab { padding: 6px 14px; border-radius: 6px; font-size: 11px; font-weight: 600; cursor: pointer; border: 1px solid var(--border); color: var(--muted); transition: all 0.2s; }
+  .tab.active { background: rgba(0,212,255,0.1); border-color: var(--accent); color: var(--accent); }
+
+  /* ── SECTION TITLES ─── */
+  .section-title { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; color: var(--muted); margin-bottom: 10px; display: flex; align-items: center; gap: 8px; }
+  .section-title::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+  hr { border: none; border-top: 1px solid var(--border); margin: 16px 0; }
+</style>
+</head>
+<body>
+
+<!-- ── HEADER ── -->
+<div class="header">
+  <div class="header-brand">
+    <div class="logo">🚁</div>
+    <div>
+      <h1>KTV Working Drone Thailand</h1>
+      <span>Master Operations Dashboard · Orchestrated Brain Network</span>
+    </div>
+  </div>
+  <div class="header-right">
+    <div class="pulse"></div>
+    <span class="status-badge" id="systemStatus">SYSTEM ONLINE</span>
+    <span class="last-sync">Last sync: <span id="lastSync">--</span></span>
+  </div>
+</div>
+
+<div class="main">
+
+  <!-- ── TOP KPI CARDS ── -->
+  <div class="grid-4">
+    <div class="card">
+      <div class="card-header"><span class="card-title">Annual Revenue Target</span></div>
+      <div class="stat-value accent-green" id="kpiRevenue">THB 180.18M</div>
+      <div class="stat-label">Year 1 · 6 Service Lines</div>
+      <div class="stat-delta neutral">▶ 0% tracked · pipeline building</div>
+    </div>
+    <div class="card">
+      <div class="card-header"><span class="card-title">EBITDA Target</span></div>
+      <div class="stat-value accent-blue">55%+</div>
+      <div class="stat-label">Healthy margin threshold</div>
+      <div class="stat-delta up">↑ Guardrail: >40% minimum</div>
+    </div>
+    <div class="card">
+      <div class="card-header"><span class="card-title">IRR Projection</span></div>
+      <div class="stat-value accent-purple">260–280%</div>
+      <div class="stat-label">IFS JV · Base Case</div>
+      <div class="stat-delta up">↑ Payback: 9–11 months</div>
+    </div>
+    <div class="card">
+      <div class="card-header"><span class="card-title">Agents Online</span></div>
+      <div class="stat-value accent-blue" id="agentsOnline">0 / 14</div>
+      <div class="stat-label">Operational + Strategy Layer</div>
+      <div class="stat-delta neutral" id="agentsDelta">Awaiting Supabase connection</div>
+    </div>
+  </div>
+
+  <!-- ── OPERATIONAL AGENTS ── -->
+  <div class="section-title">Operational Layer — 7 Agents</div>
+  <div class="card" style="margin-bottom:14px;">
+    <div class="agents-grid" id="operationalAgents">
+      <!-- seeded by JS -->
+    </div>
+  </div>
+
+  <!-- ── STRATEGY AGENTS (MASTERMIND) ── -->
+  <div class="section-title">Strategy Layer — 7 Mastermind Agents</div>
+  <div class="card" style="margin-bottom:20px;">
+    <div class="strategy-grid" id="strategyAgents">
+      <!-- seeded by JS -->
+    </div>
+  </div>
+
+  <!-- ── COWORK TEAMS + BRAIN + KPIs ── -->
+  <div class="grid-main">
+    <!-- LEFT: Teams + KPIs -->
+    <div>
+      <div class="section-title">6 CoWork Teams</div>
+      <div class="card" style="margin-bottom:14px;">
+        <div id="teamsPanel"><!-- seeded by JS --></div>
+      </div>
+
+      <div class="section-title">KPI Scoreboard</div>
+      <div class="card">
+        <div class="tabs">
+          <div class="tab active" onclick="switchTab('all')">All Teams</div>
+          <div class="tab" onclick="switchTab('growth')">Growth</div>
+          <div class="tab" onclick="switchTab('delivery')">Delivery</div>
+          <div class="tab" onclick="switchTab('revenue')">Revenue</div>
+        </div>
+        <div id="kpiPanel"><!-- seeded by JS --></div>
+      </div>
+    </div>
+
+    <!-- RIGHT: Brain + Activity Feed -->
+    <div>
+      <div class="section-title">Operations Brain</div>
+      <div class="card" style="margin-bottom:14px;">
+        <div class="brain-grid">
+          <div class="brain-stat"><div class="brain-val accent-blue" id="brainWorkflows">21</div><div class="brain-lbl">Workflows</div></div>
+          <div class="brain-stat"><div class="brain-val accent-green" id="brainTriggers">6</div><div class="brain-lbl">Triggers</div></div>
+          <div class="brain-stat"><div class="brain-val accent-purple" id="brainDecisions">0</div><div class="brain-lbl">Decisions</div></div>
+          <div class="brain-stat"><div class="brain-val accent-yellow" id="brainEvents">0</div><div class="brain-lbl">Events</div></div>
+        </div>
+      </div>
+
+      <div class="section-title">Financial Guardrails</div>
+      <div class="card" style="margin-bottom:14px;">
+        <div class="guardrail-grid">
+          <div class="guardrail"><span class="guardrail-icon">✅</span><span class="guardrail-name">Payback</span><span class="guardrail-val pass">&lt;18mo</span></div>
+          <div class="guardrail"><span class="guardrail-icon">✅</span><span class="guardrail-name">EBITDA</span><span class="guardrail-val pass">&gt;40%</span></div>
+          <div class="guardrail"><span class="guardrail-icon">✅</span><span class="guardrail-name">Price Floor</span><span class="guardrail-val pass">27 THB/sqm</span></div>
+          <div class="guardrail"><span class="guardrail-icon">✅</span><span class="guardrail-name">Min Order</span><span class="guardrail-val pass">20K sqm</span></div>
+          <div class="guardrail"><span class="guardrail-icon">✅</span><span class="guardrail-name">NPV @10%</span><span class="guardrail-val pass">Positive</span></div>
+          <div class="guardrail"><span class="guardrail-icon">✅</span><span class="guardrail-name">Drone Hours</span><span class="guardrail-val pass">&lt;2000/yr</span></div>
+        </div>
+      </div>
+
+      <div class="section-title">Activity Feed</div>
+      <div class="card">
+        <div id="activityFeed"><!-- seeded by JS --></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── SUPABASE SETUP ── -->
+  <div class="section-title">Supabase Configuration</div>
+  <div class="setup-panel">
+    <h3>🔌 Connect Live Agent Telemetry</h3>
+    <p style="font-size:12px;color:var(--muted);margin-bottom:16px;">
+      Set these environment variables to activate real-time agent sync from all 14 agents into this dashboard.
+    </p>
+    <div class="grid-3">
+      <div>
+        <div class="setup-step">
+          <div class="setup-num">1</div>
+          <div class="setup-text">
+            <strong>Create Supabase project</strong><br>
+            Go to <a href="https://supabase.com" style="color:var(--accent)">supabase.com</a> → New Project → copy your project URL and anon key.
+          </div>
+        </div>
+        <div class="setup-step">
+          <div class="setup-num">2</div>
+          <div class="setup-text">
+            <strong>Run schema migration</strong><br>
+            Open SQL Editor in Supabase and paste contents of:<br>
+            <code>scripts/supabase/001_ktv_dashboard_schema.sql</code>
+          </div>
+        </div>
+      </div>
+      <div>
+        <div class="setup-step">
+          <div class="setup-num">3</div>
+          <div class="setup-text">
+            <strong>Set environment variables</strong><br>
+            <code>SUPABASE_URL=https://xxx.supabase.co</code><br>
+            <code>SUPABASE_ANON_KEY=eyJ...</code><br>
+            <code>SUPABASE_SERVICE_ROLE_KEY=eyJ...</code> (optional)
+          </div>
+        </div>
+        <div class="setup-step">
+          <div class="setup-num">4</div>
+          <div class="setup-text">
+            <strong>Enable realtime</strong><br>
+            Supabase → Database → Replication → enable <code>agent_status</code>, <code>team_activity</code>, <code>brain_decisions</code>
+          </div>
+        </div>
+      </div>
+      <div>
+        <div class="setup-step">
+          <div class="setup-num">5</div>
+          <div class="setup-text">
+            <strong>Wire dashboard to live data</strong><br>
+            Replace <code>SUPABASE_URL</code> and <code>SUPABASE_ANON_KEY</code> in the script block below this panel to activate live polling in this HTML file.
+          </div>
+        </div>
+        <div class="setup-step">
+          <div class="setup-num">6</div>
+          <div class="setup-text">
+            <strong>Start the platform</strong><br>
+            <code>npm run build && npm start</code><br>
+            Agents will auto-report telemetry via <code>AgentTelemetry</code> class in <code>src/integrations/supabase.ts</code>
+          </div>
+        </div>
+      </div>
+    </div>
+    <hr/>
+    <div style="display:flex;gap:12px;align-items:center;flex-wrap:wrap;">
+      <span style="font-size:11px;color:var(--muted);">Live connection:</span>
+      <input id="sbUrl" type="text" placeholder="https://xxx.supabase.co" style="flex:1;background:var(--card2);border:1px solid var(--border);border-radius:6px;padding:6px 10px;color:var(--text);font-size:12px;min-width:220px;">
+      <input id="sbKey" type="text" placeholder="anon key (eyJ...)" style="flex:2;background:var(--card2);border:1px solid var(--border);border-radius:6px;padding:6px 10px;color:var(--text);font-size:12px;min-width:260px;">
+      <button onclick="connectSupabase()" style="background:var(--accent);color:var(--bg);border:none;border-radius:6px;padding:7px 16px;font-size:12px;font-weight:700;cursor:pointer;">Connect</button>
+      <span id="sbStatus" style="font-size:11px;color:var(--muted);">Not connected</span>
+    </div>
+  </div>
+
+</div><!-- /main -->
+
+<script>
+// ── Static Data (shown before Supabase connects) ──────────────────────────
+
+const OPERATIONAL_AGENTS = [
+  { role: 'fleet-management',   name: 'Fleet Mgmt',      team: 'Delivery',  icon: '🚁', status: 'offline', tasks: 0 },
+  { role: 'job-lifecycle',      name: 'Job Lifecycle',   team: 'Delivery',  icon: '📋', status: 'offline', tasks: 0 },
+  { role: 'crm-sales',          name: 'CRM & Sales',     team: 'Growth',    icon: '💼', status: 'offline', tasks: 0 },
+  { role: 'safety-compliance',  name: 'Safety & CAAT',   team: 'Compliance',icon: '🛡️', status: 'offline', tasks: 0 },
+  { role: 'finance-invoicing',  name: 'Finance',         team: 'Revenue',   icon: '💰', status: 'offline', tasks: 0 },
+  { role: 'pilot-operations',   name: 'Pilots',          team: 'Compliance',icon: '👨‍✈️', status: 'offline', tasks: 0 },
+  { role: 'data-processing',    name: 'Data Pipeline',   team: 'Delivery',  icon: '📊', status: 'offline', tasks: 0 },
+];
+
+const STRATEGY_AGENTS = [
+  { role: 'market_intelligence_strategist',       name: 'Market Intel',    team: 'Intelligence', icon: '🔍', status: 'offline' },
+  { role: 'partner_strategy_architect',           name: 'Partner Strategy',team: 'Ecosystem',    icon: '🤝', status: 'offline' },
+  { role: 'smart_green_product_orchestrator',     name: 'Smart Green',     team: 'Ecosystem',    icon: '🌿', status: 'offline' },
+  { role: 'financial_model_capital_planner',      name: 'Finance Model',   team: 'Revenue',      icon: '📈', status: 'offline' },
+  { role: 'deal_design_pitch_engineer',           name: 'Deal Design',     team: 'Revenue',      icon: '🎯', status: 'offline' },
+  { role: 'sales_playbook_account_selector',      name: 'Sales Playbook',  team: 'Growth',       icon: '📞', status: 'offline' },
+  { role: 'operations_compliance_mission_planner',name: 'Ops & Compliance',team: 'Compliance',   icon: '⚙️', status: 'offline' },
+];
+
+const TEAMS = [
+  { key: 'growth',      name: 'Growth Engine',       color: '#3b82f6', agents: 5, kpi: 'leads/week', val: '—' },
+  { key: 'delivery',    name: 'Service Delivery',    color: '#10b981', agents: 7, kpi: 'missions/week', val: '—' },
+  { key: 'compliance',  name: 'Compliance & Safety', color: '#f59e0b', agents: 4, kpi: 'incidents', val: '0' },
+  { key: 'intelligence',name: 'Market Intelligence', color: '#8b5cf6', agents: 5, kpi: 'opps scored', val: '—' },
+  { key: 'ecosystem',   name: 'Ecosystem Builder',   color: '#06b6d4', agents: 6, kpi: 'IFS milestone', val: '—' },
+  { key: 'revenue',     name: 'Revenue Operations',  color: '#ec4899', agents: 6, kpi: 'EBITDA %', val: '—' },
+];
+
+const KPIS = [
+  { team:'Growth Engine',       name:'New Leads / Week',       val:'—',   unit:'leads',   target:'5',         pct:0,  status:'on-track' },
+  { team:'Growth Engine',       name:'Conversion Rate',        val:'—',   unit:'%',       target:'30%',       pct:0,  status:'on-track' },
+  { team:'Service Delivery',    name:'Missions / Week',        val:'—',   unit:'missions',target:'10',        pct:0,  status:'on-track' },
+  { team:'Service Delivery',    name:'Safety Incidents',       val:'0',   unit:'',        target:'0',         pct:100,status:'on-track' },
+  { team:'Service Delivery',    name:'On-time Rate',           val:'—',   unit:'%',       target:'95%',       pct:0,  status:'on-track' },
+  { team:'Compliance & Safety', name:'Pre-flight Pass Rate',   val:'—',   unit:'%',       target:'>95%',      pct:0,  status:'on-track' },
+  { team:'Compliance & Safety', name:'Fleet Availability',     val:'—',   unit:'%',       target:'85%',       pct:0,  status:'on-track' },
+  { team:'Revenue Operations',  name:'Gross Revenue (THB)',    val:'—',   unit:'',        target:'180.18M',   pct:0,  status:'on-track' },
+  { team:'Revenue Operations',  name:'EBITDA Margin',          val:'—',   unit:'%',       target:'>55%',      pct:0,  status:'on-track' },
+  { team:'Revenue Operations',  name:'Collection Rate',        val:'—',   unit:'%',       target:'95%',       pct:0,  status:'on-track' },
+  { team:'Ecosystem Builder',   name:'IFS Milestone (THB)',    val:'—',   unit:'',        target:'32M',       pct:0,  status:'on-track' },
+  { team:'Ecosystem Builder',   name:'Smart Green Sites',      val:'—',   unit:'sites',   target:'3',         pct:0,  status:'on-track' },
+  { team:'Market Intelligence', name:'Opportunities Scored',   val:'—',   unit:'opps',    target:'20',        pct:0,  status:'on-track' },
+];
+
+const SAMPLE_ACTIVITY = [
+  { outcome:'success', title:'Operations Brain initialized',              meta:'brain · 21 workflows + 6 triggers registered',       time:'just now' },
+  { outcome:'success', title:'All 7 operational agents registered',       meta:'orchestrator · Fleet | Jobs | CRM | Safety | Finance | Pilots | Data', time:'just now' },
+  { outcome:'pending', title:'Awaiting Supabase connection',              meta:'dashboard · configure env vars to enable live sync',  time:'—' },
+  { outcome:'pending', title:'IFS Thailand JV partnership in progress',   meta:'ecosystem · KTV 50% control · milestone tracking',    time:'—' },
+  { outcome:'pending', title:'One Bangkok pilot program ready',           meta:'growth · THB 23.97M ACV · 3.6mo payback',             time:'—' },
+];
+
+// ── Render Functions ──────────────────────────────────────────────────────
+
+function statusDot(status) {
+  if (status === 'active')    return 'dot-active';
+  if (status === 'error')     return 'dot-error';
+  if (status === 'idle')      return 'dot-idle';
+  return 'dot-offline';
+}
+
+function renderAgents(agents, containerId, isStrategy) {
+  const el = document.getElementById(containerId);
+  el.innerHTML = agents.map(a => `
+    <div class="${isStrategy ? 'strategy-card' : 'agent-card'} ${a.status === 'active' ? 'active' : ''}">
+      <div class="agent-icon">${a.icon}</div>
+      <div class="agent-name">${a.name}</div>
+      <div class="agent-team">${a.team}</div>
+      <div class="agent-dot ${statusDot(a.status)}"></div>
+      ${!isStrategy ? `<div class="agent-tasks">${a.tasks > 0 ? a.tasks + ' tasks' : 'idle'}</div>` : ''}
+    </div>
+  `).join('');
+}
+
+function renderTeams() {
+  const el = document.getElementById('teamsPanel');
+  el.innerHTML = TEAMS.map(t => `
+    <div class="team-row">
+      <div class="team-dot" style="background:${t.color}"></div>
+      <div class="team-name">${t.name}</div>
+      <div class="team-agents">${t.agents} agents</div>
+      <div class="team-kpi">
+        <strong>${t.val}</strong>
+        <span style="font-size:10px;color:var(--muted)">${t.kpi}</span>
+      </div>
+    </div>
+  `).join('');
+}
+
+let currentTab = 'all';
+function switchTab(tab) {
+  currentTab = tab;
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  event.target.classList.add('active');
+  renderKpis();
+}
+
+function barColor(status) {
+  if (status === 'on-track') return 'var(--green)';
+  if (status === 'at-risk')  return 'var(--yellow)';
+  return 'var(--red)';
+}
+
+function renderKpis() {
+  const el = document.getElementById('kpiPanel');
+  const filtered = currentTab === 'all' ? KPIS : KPIS.filter(k => k.team.toLowerCase().includes(currentTab));
+  el.innerHTML = filtered.map(k => `
+    <div class="kpi-row">
+      <div class="kpi-name">${k.name}<br><span style="font-size:9px;color:var(--muted)">${k.team}</span></div>
+      <div class="kpi-bar-wrap"><div class="kpi-bar" style="width:${k.pct}%;background:${barColor(k.status)}"></div></div>
+      <div class="kpi-value">${k.val}${k.unit ? '<span style="font-size:9px;color:var(--muted)"> ' + k.unit + '</span>' : ''}</div>
+      <div class="kpi-status ${k.status}">${k.status}</div>
+    </div>
+  `).join('');
+}
+
+function renderActivity(items) {
+  const el = document.getElementById('activityFeed');
+  el.innerHTML = items.map(i => `
+    <div class="feed-item">
+      <div class="feed-dot ${i.outcome}"></div>
+      <div class="feed-content">
+        <div class="feed-title">${i.title}</div>
+        <div class="feed-meta">${i.meta}</div>
+      </div>
+      <div class="feed-time">${i.time}</div>
+    </div>
+  `).join('');
+}
+
+function updateLastSync() {
+  document.getElementById('lastSync').textContent = new Date().toLocaleTimeString('en-US', { hour12: false });
+}
+
+// ── Supabase Live Connection ──────────────────────────────────────────────
+
+let sbUrl = '', sbKey = '';
+let pollInterval = null;
+
+function connectSupabase() {
+  sbUrl = document.getElementById('sbUrl').value.trim().replace(/\/$/, '');
+  sbKey = document.getElementById('sbKey').value.trim();
+  if (!sbUrl || !sbKey) { alert('Enter both Supabase URL and anon key'); return; }
+
+  document.getElementById('sbStatus').textContent = 'Connecting…';
+  fetchAndRender().then(() => {
+    document.getElementById('sbStatus').textContent = '✅ Connected — polling every 10s';
+    document.getElementById('sbStatus').style.color = 'var(--green)';
+    if (pollInterval) clearInterval(pollInterval);
+    pollInterval = setInterval(fetchAndRender, 10000);
+  }).catch(e => {
+    document.getElementById('sbStatus').textContent = '❌ ' + e.message;
+    document.getElementById('sbStatus').style.color = 'var(--red)';
+  });
+}
+
+async function sbGet(table, qs) {
+  const r = await fetch(`${sbUrl}/rest/v1/${table}${qs ? '?' + qs : ''}`, {
+    headers: { apikey: sbKey, Authorization: 'Bearer ' + sbKey }
+  });
+  if (!r.ok) throw new Error(`Supabase ${table}: ${r.status}`);
+  return r.json();
+}
+
+async function fetchAndRender() {
+  const [agents, decisions, kpis, activity] = await Promise.all([
+    sbGet('agent_status', 'order=agent_name.asc'),
+    sbGet('brain_decisions', 'order=created_at.desc&limit=5'),
+    sbGet('kpi_snapshots', 'order=team.asc,kpi_name.asc'),
+    sbGet('team_activity', 'order=created_at.desc&limit=10'),
+  ]);
+
+  // Update operational agents
+  agents.filter(a => a.layer === 'operational').forEach(a => {
+    const idx = OPERATIONAL_AGENTS.findIndex(x => x.role === a.agent_role);
+    if (idx >= 0) { OPERATIONAL_AGENTS[idx].status = a.status; OPERATIONAL_AGENTS[idx].tasks = a.tasks_pending || 0; }
+  });
+  renderAgents(OPERATIONAL_AGENTS, 'operationalAgents', false);
+
+  // Update strategy agents
+  agents.filter(a => a.layer === 'strategy').forEach(a => {
+    const idx = STRATEGY_AGENTS.findIndex(x => x.role === a.agent_role);
+    if (idx >= 0) STRATEGY_AGENTS[idx].status = a.status;
+  });
+  renderAgents(STRATEGY_AGENTS, 'strategyAgents', true);
+
+  // Agents online count
+  const online = agents.filter(a => a.status !== 'offline').length;
+  document.getElementById('agentsOnline').textContent = `${online} / 14`;
+  document.getElementById('agentsDelta').textContent = online === 14 ? '✅ All agents online' : `${14 - online} agents offline`;
+
+  // Brain decisions count
+  document.getElementById('brainDecisions').textContent = decisions.length > 0 ? decisions[0]?.id ? decisions.length : '—' : '0';
+
+  // KPIs
+  if (kpis.length > 0) {
+    kpis.forEach(row => {
+      const idx = KPIS.findIndex(k => k.team === row.team && k.name === row.kpi_name);
+      if (idx >= 0) { KPIS[idx].val = row.kpi_value; KPIS[idx].status = row.status; }
+    });
+    renderKpis();
+  }
+
+  // Activity feed
+  if (activity.length > 0) {
+    const items = activity.map(a => ({
+      outcome: 'success',
+      title: a.action,
+      meta: `${a.agent_role} · ${a.team}`,
+      time: new Date(a.created_at).toLocaleTimeString('en-US', { hour12: false }),
+    }));
+    renderActivity(items);
+  }
+
+  updateLastSync();
+}
+
+// ── Init ──────────────────────────────────────────────────────────────────
+
+renderAgents(OPERATIONAL_AGENTS, 'operationalAgents', false);
+renderAgents(STRATEGY_AGENTS, 'strategyAgents', true);
+renderTeams();
+renderKpis();
+renderActivity(SAMPLE_ACTIVITY);
+updateLastSync();
+setInterval(updateLastSync, 30000);
+</script>
+</body>
+</html>

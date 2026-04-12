@@ -51,6 +51,12 @@ Layer 3: Business Operations (src/operations/)
 - **Odoo** — ERP connector
 - **AWS S3** — Data storage
 - **DJI FlightHub** — Fleet telemetry
+- **Notion** — Workspace pages, agent snapshots, KPI databases
+- **Google Drive** — Document storage, folder structure, file uploads
+- **Asana** — Project/task management for 6 CoWork teams
+- **Airtable** — Agent status, KPI snapshots, structured records
+- **Supabase** — Real-time dashboard, telemetry, decision logs
+- **Gamma** — Pitch decks, reports, and presentations (AI-generated)
 
 ### Type System
 
@@ -86,7 +92,7 @@ Strategic deal documentation: battle-plan, market-intelligence, partnership, fin
 | `src/agents/` | 7 operational agents + orchestrator + base class |
 | `src/workflows/` | EventBus, WorkflowEngine, OperationsBrain, triggers, connected apps |
 | `src/operations/` | KtvPlatform, service ops, scheduling, onboarding, supply chain, reporting |
-| `src/integrations/` | LINE, Odoo, S3, FlightHub connectors |
+| `src/integrations/` | LINE, Odoo, S3, FlightHub, Notion, GDrive, Asana, Airtable, Supabase, Gamma |
 | `src/types/` | All TypeScript interfaces |
 | `src/config/` | Business config (operations, JV partners) |
 | `src/mastermind/` | Python strategy agents |
@@ -168,6 +174,64 @@ await telemetry.reportActivity('Growth Engine', 'crm-sales', 'Lead qualified', '
 | `kpi_snapshots` | Current KPI values per team (upserted, 1 row per team+kpi) |
 | `mission_log` | Append-only drone mission history |
 | `team_activity` | Rolling feed of agent actions across all 6 CoWork teams |
+
+## Gamma — Presentations & Pitch Decks
+
+AI-generated pitch decks, reports, and presentations via `src/integrations/gamma.ts`.
+
+### Environment Variables
+
+```bash
+GAMMA_API_KEY=sk-gamma-...
+GAMMA_WORKSPACE_ID=optional_workspace_id
+```
+
+### Integration API
+
+```typescript
+import { createGammaClient } from './integrations/gamma.js';
+
+const gamma = createGammaClient();  // returns null if GAMMA_API_KEY not set
+
+// Read existing decks
+const decks = await gamma.listDocs('presentation');
+const slides = await gamma.getCards(decks[0].id);
+const results = await gamma.searchDocs('One Bangkok');
+
+// Create new content
+await gamma.createPresentation('Title', [{ title: 'Slide 1', content: '...' }]);
+await gamma.createReport('Title', [{ title: 'Section 1', content: '...' }]);
+await gamma.generateFromOutline('Title', 'markdown outline text');
+
+// KTV pre-built generators
+await gamma.pushOneBangkokPitchDeck();   // 10-slide investor pitch
+await gamma.pushInvestorReport();         // 7-section financial report
+await gamma.pushEsgReport();              // 6-slide ESG performance deck
+await gamma.pushWeeklyStatusDeck(data);   // dynamic weekly ops summary
+```
+
+### Existing Pitch Deck Content (docs/one-bangkok/pitch-deck/)
+
+The `pushOneBangkokPitchDeck()` method generates from this verified content:
+
+| Slide | Title | Key Data |
+|-------|-------|----------|
+| 1 | One Bangkok Deserves One Solution | KTV + IFS + PCS logos |
+| 2 | The Challenge | 104,000 sqm, 40%+ fatality rate from work-at-height |
+| 3 | The KTV Solution | 16 drones, 10 pilots, zero workers at height |
+| 4 | KTV CARE Framework | Clean, Assess, Report, Ensure |
+| 5 | IFS Integration | Smart Green → IFS Cloud → PCS Ground Teams |
+| 6 | Safety | 0 workers at height, 0 fall risk hours |
+| 7 | Cost Comparison | 30 THB/sqm vs 80-150 THB, 60-70% savings |
+| 8 | Smart Green ESG | GRESB, TREES, LEED, WELL, SET compatible |
+| 9 | Partnership Model | KTV (air) + IFS (digital) + PCS (ground) |
+| 10 | Exclusive Offer | 90-day paid pilot → phased rollout |
+
+### Pre-Built Report Types
+
+- **Investor Financial Report** — USD 1.455M investment, 1350% ROI, 257% IRR, 6.3mo payback, 6 service lines, fleet composition, CAAT compliance
+- **ESG Performance Report** — GRESB indicators, 96% GHG reduction, 0.3 L/sqm water, assurance chain, disclosure artifacts
+- **Weekly Ops Status** — dynamic agent/mission/revenue/incident summary for management
 
 ## Security
 

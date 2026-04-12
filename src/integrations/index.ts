@@ -20,3 +20,6 @@ export type { AirtableConfig, AirtableRecord } from './airtable.js';
 
 export { GDriveClient, createGDriveClient } from './gdrive.js';
 export type { GDriveConfig, GDriveFile } from './gdrive.js';
+
+export { GammaClient, createGammaClient } from './gamma.js';
+export type { GammaConfig, GammaDoc, GammaCard, GammaDocType, GammaGenerateInput, GammaGenerateResult } from './gamma.js';

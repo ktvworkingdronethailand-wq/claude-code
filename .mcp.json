@@ -17,6 +17,10 @@
         "CLAUDE_FLOW_MEMORY_BACKEND": "hybrid"
       },
       "autoStart": false
+    },
+    "notion": {
+      "type": "http",
+      "url": "https://mcp.notion.com/mcp"
     }
   }
 }

@@ -23,3 +23,6 @@ export type { GDriveConfig, GDriveFile } from './gdrive.js';
 
 export { GammaClient, createGammaClient } from './gamma.js';
 export type { GammaConfig, GammaDoc, GammaCard, GammaDocType, GammaGenerateInput, GammaGenerateResult } from './gamma.js';
+
+export { CanvaClient, createCanvaClient } from './canva.js';
+export type { CanvaConfig, CanvaDesign, CanvaExportJob, CanvaAutofillJob, CanvaDesignType, CanvaExportFormat } from './canva.js';

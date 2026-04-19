@@ -1,14 +1,15 @@
 /**
  * KTV Working Drone Thailand — Automated Reporting Orchestrator
  *
- * Distributes weekly operations reports to 7 platforms in parallel:
+ * Distributes weekly operations reports to 8 platforms in parallel:
  *   1. Notion — report as workspace page
  *   2. Asana — weekly tasks per CoWork team
  *   3. Airtable — strategy KPIs and agent status
  *   4. Supabase — full dashboard update (agents, KPIs, activity, decisions)
  *   5. Gamma — generate presentation reports
- *   6. Google Drive — upload master report file
- *   7. Email — send to matthew@ktvworkingdronethailand.com
+ *   6. Canva — create pitch deck from brand template
+ *   7. Google Drive — upload master report file
+ *   8. Email — send to matthew@ktvworkingdronethailand.com
  */
 
 import { NotionClient, createNotionClient } from '../integrations/notion.js';
@@ -17,6 +18,7 @@ import { AirtableClient, createAirtableClient } from '../integrations/airtable.j
 import { KtvSupabaseClient, AgentTelemetry, createSupabaseClient, AGENT_TEAM_MAP } from '../integrations/supabase.js';
 import { GammaClient, createGammaClient } from '../integrations/gamma.js';
 import { GDriveClient, createGDriveClient } from '../integrations/gdrive.js';
+import { CanvaClient, createCanvaClient } from '../integrations/canva.js';
 import type { OperationalKPIs, ExecutiveSummary } from './reporting.js';
 import type { AgentHealth } from '../types/index.js';
 
@@ -54,6 +56,7 @@ export class AutomatedReportingOrchestrator {
   private airtable: AirtableClient | null;
   private supabase: KtvSupabaseClient | null;
   private gamma: GammaClient | null;
+  private canva: CanvaClient | null;
   private gdrive: GDriveClient | null;
 
   constructor() {
@@ -62,6 +65,7 @@ export class AutomatedReportingOrchestrator {
     this.airtable = createAirtableClient();
     this.supabase = createSupabaseClient();
     this.gamma = createGammaClient();
+    this.canva = createCanvaClient();
     this.gdrive = createGDriveClient();
   }
 
@@ -72,13 +76,14 @@ export class AutomatedReportingOrchestrator {
       this.pushToAirtable(input),
       this.pushToSupabase(input),
       this.pushToGamma(input),
+      this.pushToCanva(input),
       this.pushToGDrive(input),
       this.sendEmailReport(input),
     ];
 
     const results = await Promise.allSettled(tasks);
     const distributed: ReportDistributionResult[] = results.map((r, i) => {
-      const platforms = ['Notion', 'Asana', 'Airtable', 'Supabase', 'Gamma', 'Google Drive', 'Email'];
+      const platforms = ['Notion', 'Asana', 'Airtable', 'Supabase', 'Gamma', 'Canva', 'Google Drive', 'Email'];
       if (r.status === 'fulfilled') return r.value;
       return {
         platform: platforms[i]!,
@@ -330,7 +335,28 @@ export class AutomatedReportingOrchestrator {
     return { platform: 'Gamma', success: true, url: result.url, durationMs: Date.now() - start };
   }
 
-  // ── 6. Google Drive — Upload master report file ───────────
+  // ── 6. Canva — Create pitch deck from brand template ──────
+
+  async pushToCanva(input: WeeklyReportInput): Promise<ReportDistributionResult> {
+    const start = Date.now();
+    if (!this.canva) {
+      return { platform: 'Canva', success: false, error: 'CANVA_ACCESS_TOKEN not configured', durationMs: 0 };
+    }
+
+    const onlineAgents = input.agentHealths.filter(a => a.health.status === 'active').length;
+    const design = await this.canva.pushWeeklyStatusDeck({
+      agentsOnline: onlineAgents,
+      totalAgents: input.agentHealths.length,
+      missionsCompleted: input.kpis.jobs.completedThisPeriod,
+      revenue: `THB ${(input.kpis.revenue.grossRevenue / 1_000_000).toFixed(2)}M`,
+      incidents: input.kpis.safety.incidentRate > 0 ? 1 : 0,
+      highlights: input.highlights,
+    });
+
+    return { platform: 'Canva', success: true, url: design.url, durationMs: Date.now() - start };
+  }
+
+  // ── 7. Google Drive — Upload master report file ───────────
 
   async pushToGDrive(input: WeeklyReportInput): Promise<ReportDistributionResult> {
     const start = Date.now();
@@ -351,7 +377,7 @@ export class AutomatedReportingOrchestrator {
     return { platform: 'Google Drive', success: true, url: file.webViewLink, durationMs: Date.now() - start };
   }
 
-  // ── 7. Email — Send to matthew@ktvworkingdronethailand.com ─
+  // ── 8. Email — Send to matthew@ktvworkingdronethailand.com ─
 
   async sendEmailReport(input: WeeklyReportInput): Promise<ReportDistributionResult> {
     const start = Date.now();

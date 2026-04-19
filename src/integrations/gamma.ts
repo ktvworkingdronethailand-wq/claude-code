@@ -291,6 +291,47 @@ export class GammaClient {
   }
 
   /**
+   * Generate IFS Green FM + Thailand Climate Change Act pitch deck.
+   * Positions IFS as the "Green FM" company with carbon-verified drone services.
+   */
+  async pushGreenFmPitchDeck(): Promise<GammaGenerateResult> {
+    return this.createPresentation('Green FM by IFS × KTV — Thailand\'s Carbon-Verified FM Provider', [
+      {
+        title: 'Green FM by IFS × KTV',
+        content: 'Thailand\'s First Carbon-Verified Facility Management Service\nWhere Facility Management Meets Climate Action\n\nIFS Thailand × KTV Working Drone × Smart Green Operations',
+      },
+      {
+        title: 'Thailand Climate Change Act — The New Reality',
+        content: 'Key Regulatory Changes:\n- Emissions Trading System (ETS): Cap-and-trade for designated entities\n- Mandatory GHG Reporting: All sectors must report to national registry\n- Carbon Tax: Legal framework for carbon pricing + Thailand CBAM\n- Climate Fund: Revenue from carbon tax and ETS finances green projects\n- TGO Oversight: Greenhouse Gas Management Organization enforces compliance\n\nYour FM provider must be compliant — or you inherit the risk.',
+      },
+      {
+        title: 'The Green FM Advantage',
+        content: '96% GHG Reduction vs Traditional Methods — Verified Per Mission\n\n- Every drone mission generates T-VER carbon credits\n- IoT sensors capture real-time environmental telemetry\n- Smart Green platform produces automated GHG reports\n- Carbon credits become a revenue stream, not a cost\n- Scope 1, 2, 3 emissions tracked and reported automatically',
+      },
+      {
+        title: 'IoT-Enabled Environmental Monitoring',
+        content: 'ESG Drone Van + Fleet-Wide IoT Sensors:\n\n- PM2.5/PM10 air quality monitoring at every site\n- CO2 and VOC tracking for indoor air quality credits\n- Water consumption: 0.3 L/sqm precision telemetry\n- Chemical usage: 0.05 L/sqm eco-product tracking\n- Energy: kWh per mission vs diesel baseline\n- GPS fleet tracking with carbon footprint mapping\n\nAll data cryptographically signed at source → immutable ledger.',
+      },
+      {
+        title: 'Carbon Credit Generation',
+        content: 'Every Flight Pays for Itself in Carbon Savings:\n\nDrone Mission → GHG Calculation → T-VER Verification → Carbon Credit\n\n- Baseline: Rope access emissions per sqm (fuel, equipment, transport)\n- Actual: Drone mission emissions per sqm (electric, precision)\n- Net Reduction: 96% → converted to T-VER carbon credits\n- Trading: Credits tradeable on Thailand Carbon Credit Exchange\n\nEstimated credit value: 200 THB/tCO2e (and rising with ETS)',
+      },
+      {
+        title: 'ESG Compliance Matrix',
+        content: 'One Service — Six Framework Certifications:\n\n- Thailand Climate Change Act: Full GHG + ETS compliance\n- GRESB: PE1-PE5 indicators + DA2 environmental impact\n- TREES (Thai Green Building): Water + Energy + Innovation\n- LEED O+M: Exterior maintenance + indoor air quality\n- SET One Report (56-1): Automated ESG disclosure appendix\n- T-VER: Per-mission verified emission reductions',
+      },
+      {
+        title: 'IFS Green FM vs Traditional FM',
+        content: 'IFS Green FM:\n- GHG Reporting: Automated via Smart Green\n- Carbon Position: Credit generator\n- ESG Data: Real-time IoT telemetry\n- Safety: 0 workers at height\n- Cost: 30 THB/sqm, 60-70% savings\n- Compliance: Climate Act ready\n\nTraditional FM:\n- GHG Reporting: Manual or none\n- Carbon Position: Carbon cost liability\n- ESG Data: Annual estimates at best\n- Safety: 40%+ fatality rate work-at-height\n- Cost: 80-150 THB/sqm\n- Compliance: Years away',
+      },
+      {
+        title: 'Next Steps — Become a Green FM Pioneer',
+        content: 'Phase 1: Green FM Pilot (90 days)\n- Deploy KTV drones at 1-3 IFS sites\n- Install IoT environmental monitoring\n- Generate first GHG report and T-VER credits\n\nPhase 2: Portfolio Rollout (6 months)\n- Scale across IFS FM portfolio\n- Establish carbon credit trading pipeline\n- Full GRESB submission support\n\nContact: matthew@ktvworkingdronethailand.com\nGreen FM by IFS × KTV — Climate Action, Delivered.',
+      },
+    ]);
+  }
+
+  /**
    * Generate a weekly operations status deck for management review.
    */
   async pushWeeklyStatusDeck(data: {

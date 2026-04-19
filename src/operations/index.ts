@@ -16,3 +16,6 @@ export type { SparePart, Vendor, PurchaseOrder, ChemicalStock, ReorderAlert } fr
 
 export { ReportingEngine } from './reporting.js';
 export type { OperationalKPIs, ExecutiveSummary, GrowthTracker, ServiceLineReport } from './reporting.js';
+
+export { AutomatedReportingOrchestrator, createReportingOrchestrator } from './automated-reporting.js';
+export type { ReportDistributionResult, WeeklyReportInput, AutomatedReportResult } from './automated-reporting.js';

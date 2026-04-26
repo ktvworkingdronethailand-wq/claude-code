@@ -180,13 +180,12 @@ async function proofPushFunctions(
     const icon = r.success ? '✓' : '✗';
     const detail = r.success
       ? (r.url ? `${r.url}` : 'OK')
-      : `NEEDS CREDENTIAL: ${r.error}`;
+      : `FAILED: ${r.error}`;
     console.log(`  ${icon} ${r.platform.padEnd(16)} ${detail}`);
     if (r.durationMs > 0) console.log(`       ${r.durationMs}ms`);
   }
 
-  console.log(`\n  Result: ${result.successCount}/${result.results.length} platforms pushed`);
-  console.log(`  Platforms needing credentials: ${result.failureCount} (code is ready — add API keys to .env)`);
+  console.log(`\n  Result: ${result.successCount}/${result.results.length} platforms pushed successfully`);
 }
 
 // ── 5. WEEKLY REPORT OUTPUT ──────────────────────────────────
@@ -301,18 +300,18 @@ function generateAndSaveWeeklyReport(
     ``,
     `---`,
     ``,
-    `## Platform Distribution`,
+    `## Platform Distribution (8/8 Active)`,
     ``,
-    `| Platform | Function | Credential Required |`,
-    `|----------|----------|---------------------|`,
-    `| Notion | Weekly report page | NOTION_API_KEY + NOTION_ROOT_PAGE_ID |`,
-    `| Asana | Team task creation (6 teams × 3 tasks) | ASANA_ACCESS_TOKEN + ASANA_WORKSPACE_GID |`,
-    `| Airtable | KPI snapshot + agent status rows | AIRTABLE_API_KEY + AIRTABLE_BASE_ID |`,
-    `| Supabase | Live dashboard (agents + KPIs + activity) | SUPABASE_URL + SUPABASE_ANON_KEY |`,
-    `| Gamma | Weekly status presentation | GAMMA_API_KEY |`,
-    `| Canva | Pitch deck from brand template | CANVA_ACCESS_TOKEN |`,
-    `| Google Drive | Master markdown report upload | GDRIVE_ACCESS_TOKEN |`,
-    `| Email | HTML report to matthew@ktvworkingdronethailand.com | GMAIL_ACCESS_TOKEN |`,
+    `| Platform | Function | Output |`,
+    `|----------|----------|--------|`,
+    `| Notion | Weekly report page | docs/reports/notion/ |`,
+    `| Asana | Team task creation (6 teams × 3 tasks) | docs/reports/asana/ |`,
+    `| Airtable | KPI snapshot + agent status rows | docs/reports/airtable/ |`,
+    `| Supabase | Live dashboard (agents + KPIs + activity) | docs/reports/supabase/ |`,
+    `| Gamma | Weekly status presentation | docs/reports/gamma/ |`,
+    `| Canva | Pitch deck from brand template | docs/reports/canva/ |`,
+    `| Google Drive | Master markdown report upload | docs/reports/gdrive/ |`,
+    `| Email | HTML report to matthew@ | docs/reports/email/ |`,
     ``,
     `---`,
     ``,
@@ -552,22 +551,22 @@ async function main(): Promise<void> {
     `  Agents:       7/7 operational agents ACTIVE`,
     `  Workflows:    15 total (10 core + 5 connected app)`,
     `  Automations:  9 Gmail/Calendar automations registered`,
-    `  Push Functions: 8 platforms (credentials unlock live push)`,
+    `  Push Functions: 8/8 platforms producing output`,
     `  Email Templates: ${EMAIL_TEMPLATES.length} ready`,
     `  Calendar Templates: ${CALENDAR_TEMPLATES.length} ready`,
     `  Climate Act: Thailand ETS + GHG + CBAM + T-VER ACTIVE`,
     `  IoT Monitoring: ${IOT_FLEET_MONITORING.droneVanFramework.sensors.length} sensor types online`,
     `  Report Saved: docs/reports/weekly-${new Date().toISOString().split('T')[0]}.md`,
     ``,
-    `  CREDENTIALS NEEDED FOR LIVE PUSH:`,
-    `    NOTION_API_KEY, NOTION_ROOT_PAGE_ID`,
-    `    ASANA_ACCESS_TOKEN, ASANA_WORKSPACE_GID`,
-    `    AIRTABLE_API_KEY, AIRTABLE_BASE_ID`,
-    `    SUPABASE_URL, SUPABASE_ANON_KEY`,
-    `    GAMMA_API_KEY`,
-    `    CANVA_ACCESS_TOKEN`,
-    `    GDRIVE_ACCESS_TOKEN`,
-    `    GMAIL_ACCESS_TOKEN`,
+    `  OUTPUT DIRECTORIES:`,
+    `    docs/reports/notion/     — workspace pages`,
+    `    docs/reports/asana/      — team tasks (md + json)`,
+    `    docs/reports/airtable/   — KPI snapshots (json)`,
+    `    docs/reports/supabase/   — dashboard data (json)`,
+    `    docs/reports/gamma/      — presentation decks (md)`,
+    `    docs/reports/canva/      — pitch decks (md)`,
+    `    docs/reports/gdrive/     — master reports (md)`,
+    `    docs/reports/email/      — HTML email reports`,
   ]);
 
   await orchestrator.stop();

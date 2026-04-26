@@ -1,0 +1,141 @@
+{
+  "generatedAt": "2026-04-26T04:11:56.864Z",
+  "period": "Week of 26 April 2026",
+  "agents": [
+    {
+      "name": "fleet-management",
+      "role": "fleet-management",
+      "team": "Service Delivery",
+      "layer": "operational",
+      "status": "active",
+      "tasksCompleted": 0,
+      "lastActivity": "2026-04-26T04:11:56.837Z"
+    },
+    {
+      "name": "job-lifecycle",
+      "role": "job-lifecycle",
+      "team": "Service Delivery",
+      "layer": "operational",
+      "status": "active",
+      "tasksCompleted": 0,
+      "lastActivity": "2026-04-26T04:11:56.838Z"
+    },
+    {
+      "name": "crm-sales",
+      "role": "crm-sales",
+      "team": "Growth Engine",
+      "layer": "operational",
+      "status": "active",
+      "tasksCompleted": 0,
+      "lastActivity": "2026-04-26T04:11:56.838Z"
+    },
+    {
+      "name": "safety-compliance",
+      "role": "safety-compliance",
+      "team": "Compliance & Safety",
+      "layer": "operational",
+      "status": "active",
+      "tasksCompleted": 0,
+      "lastActivity": "2026-04-26T04:11:56.838Z"
+    },
+    {
+      "name": "finance-invoicing",
+      "role": "finance-invoicing",
+      "team": "Revenue Operations",
+      "layer": "operational",
+      "status": "active",
+      "tasksCompleted": 0,
+      "lastActivity": "2026-04-26T04:11:56.838Z"
+    },
+    {
+      "name": "pilot-operations",
+      "role": "pilot-operations",
+      "team": "Compliance & Safety",
+      "layer": "operational",
+      "status": "active",
+      "tasksCompleted": 0,
+      "lastActivity": "2026-04-26T04:11:56.838Z"
+    },
+    {
+      "name": "data-processing",
+      "role": "data-processing",
+      "team": "Service Delivery",
+      "layer": "operational",
+      "status": "active",
+      "tasksCompleted": 0,
+      "lastActivity": "2026-04-26T04:11:56.838Z"
+    }
+  ],
+  "kpis": [
+    {
+      "team": "Service Delivery",
+      "name": "Fleet Utilization",
+      "value": "75.0%",
+      "target": "80%",
+      "status": "on-track"
+    },
+    {
+      "team": "Service Delivery",
+      "name": "Fleet Availability",
+      "value": "93.8%",
+      "target": "90%",
+      "status": "on-track"
+    },
+    {
+      "team": "Compliance & Safety",
+      "name": "Preflight Pass Rate",
+      "value": "99%",
+      "target": "95%",
+      "status": "on-track"
+    },
+    {
+      "team": "Compliance & Safety",
+      "name": "Days Without Incident",
+      "value": "365",
+      "target": "365",
+      "status": "on-track"
+    },
+    {
+      "team": "Revenue Operations",
+      "name": "Gross Revenue",
+      "value": "THB 3.46M",
+      "target": "THB 180.18M",
+      "status": "on-track"
+    },
+    {
+      "team": "Revenue Operations",
+      "name": "EBITDA Margin",
+      "value": "77.7%",
+      "target": "77.7%",
+      "status": "on-track"
+    },
+    {
+      "team": "Growth Engine",
+      "name": "Total Leads",
+      "value": "34",
+      "target": "50",
+      "status": "on-track"
+    },
+    {
+      "team": "Growth Engine",
+      "name": "Conversion Rate",
+      "value": "23.5%",
+      "target": "25%",
+      "status": "on-track"
+    },
+    {
+      "team": "Ecosystem Builder",
+      "name": "GHG Reduction",
+      "value": "96%",
+      "target": "90%",
+      "status": "on-track"
+    },
+    {
+      "team": "Ecosystem Builder",
+      "name": "Carbon Credits (T-VER)",
+      "value": "Active",
+      "target": "Generating",
+      "status": "on-track"
+    }
+  ]
+}

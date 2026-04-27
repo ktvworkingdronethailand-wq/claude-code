@@ -1,0 +1,114 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "Claude Code - Start Session",
+      "type": "shell",
+      "command": "claude",
+      "group": "none",
+      "presentation": {
+        "reveal": "always",
+        "panel": "dedicated",
+        "focus": true
+      },
+      "isBackground": true,
+      "problemMatcher": []
+    },
+    {
+      "label": "Claude Code - Resume Last Session",
+      "type": "shell",
+      "command": "claude --resume",
+      "group": "none",
+      "presentation": {
+        "reveal": "always",
+        "panel": "dedicated",
+        "focus": true
+      },
+      "isBackground": true,
+      "problemMatcher": []
+    },
+    {
+      "label": "Claude Code - CoWork Orchestrator",
+      "type": "shell",
+      "command": "claude -p '/cowork'",
+      "group": "none",
+      "presentation": {
+        "reveal": "always",
+        "panel": "dedicated",
+        "focus": true
+      },
+      "isBackground": true,
+      "problemMatcher": []
+    },
+    {
+      "label": "KTV - Build",
+      "type": "shell",
+      "command": "npm run build",
+      "group": {
+        "kind": "build",
+        "isDefault": true
+      },
+      "problemMatcher": ["$tsc"]
+    },
+    {
+      "label": "KTV - Test (all 3 suites)",
+      "type": "shell",
+      "command": "npm test",
+      "group": {
+        "kind": "test",
+        "isDefault": true
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "KTV - Start Platform",
+      "type": "shell",
+      "command": "npm run start",
+      "group": "none",
+      "presentation": {
+        "reveal": "always",
+        "panel": "dedicated"
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "KTV - Run Demo (Full Proof of Execution)",
+      "type": "shell",
+      "command": "npm run build && node dist/scripts/demo-full-report.js",
+      "group": "none",
+      "presentation": {
+        "reveal": "always",
+        "panel": "dedicated"
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "KTV - Lint (type check only)",
+      "type": "shell",
+      "command": "npm run lint",
+      "group": "none",
+      "problemMatcher": ["$tsc"]
+    },
+    {
+      "label": "Swarm - Initialize",
+      "type": "shell",
+      "command": "npx ruflo@latest swarm init --topology hierarchical --max-agents 8 --strategy specialized",
+      "group": "none",
+      "problemMatcher": []
+    },
+    {
+      "label": "Swarm - Doctor (diagnose + fix)",
+      "type": "shell",
+      "command": "npx ruflo@latest doctor --fix",
+      "group": "none",
+      "problemMatcher": []
+    },
+    {
+      "label": "Python Mastermind - Run Tests",
+      "type": "shell",
+      "command": "python src/mastermind/tests/mastermind.test.py",
+      "group": "none",
+      "problemMatcher": []
+    }
+  ]
+}

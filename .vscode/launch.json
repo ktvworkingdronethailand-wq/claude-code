@@ -1,0 +1,55 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "KTV Platform - Start",
+      "type": "node",
+      "request": "launch",
+      "program": "${workspaceFolder}/dist/src/index.js",
+      "preLaunchTask": "KTV - Build",
+      "outFiles": ["${workspaceFolder}/dist/**/*.js"],
+      "sourceMaps": true,
+      "console": "integratedTerminal"
+    },
+    {
+      "name": "KTV Demo - Full Report",
+      "type": "node",
+      "request": "launch",
+      "program": "${workspaceFolder}/dist/scripts/demo-full-report.js",
+      "preLaunchTask": "KTV - Build",
+      "outFiles": ["${workspaceFolder}/dist/**/*.js"],
+      "sourceMaps": true,
+      "console": "integratedTerminal"
+    },
+    {
+      "name": "KTV Tests - Agents",
+      "type": "node",
+      "request": "launch",
+      "program": "${workspaceFolder}/dist/tests/agents.test.js",
+      "preLaunchTask": "KTV - Build",
+      "outFiles": ["${workspaceFolder}/dist/**/*.js"],
+      "sourceMaps": true,
+      "console": "integratedTerminal"
+    },
+    {
+      "name": "KTV Tests - Workflows",
+      "type": "node",
+      "request": "launch",
+      "program": "${workspaceFolder}/dist/tests/workflows.test.js",
+      "preLaunchTask": "KTV - Build",
+      "outFiles": ["${workspaceFolder}/dist/**/*.js"],
+      "sourceMaps": true,
+      "console": "integratedTerminal"
+    },
+    {
+      "name": "KTV Tests - Platform",
+      "type": "node",
+      "request": "launch",
+      "program": "${workspaceFolder}/dist/tests/platform.test.js",
+      "preLaunchTask": "KTV - Build",
+      "outFiles": ["${workspaceFolder}/dist/**/*.js"],
+      "sourceMaps": true,
+      "console": "integratedTerminal"
+    }
+  ]
+}

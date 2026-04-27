@@ -384,7 +384,7 @@ async function testFullPlatform(): Promise<void> {
   const status = platform.getStatus();
   assert(status.online === true, 'Platform online');
   assert(status.agents.length === 7, '7 agents active');
-  assert(status.brain.workflows === 10, '10 workflows registered');
+  assert(status.brain.workflows === 15, '15 workflows registered (10 core + 5 connected apps)');
   assert(status.operations.services === 6, '6 service lines');
 
   // End-to-end: New inquiry

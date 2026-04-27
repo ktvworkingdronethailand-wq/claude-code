@@ -18,7 +18,7 @@ import * as path from 'path';
 import { KtvOrchestrator } from '../src/agents/orchestrator.js';
 import { ALL_WORKFLOWS } from '../src/workflows/definitions.js';
 import { CONNECTED_APP_WORKFLOWS, CONNECTED_AUTOMATIONS, EMAIL_TEMPLATES, CALENDAR_TEMPLATES, KTV_TEAM } from '../src/workflows/connected-apps.js';
-import { AutomatedReportingOrchestrator } from '../src/operations/automated-reporting.js';
+import { AutomatedReportingOrchestrator, buildTeamTasks, formatRevenueTHB, pct } from '../src/operations/automated-reporting.js';
 import { ReportingEngine } from '../src/operations/reporting.js';
 import { IFS_GREEN_FM_STRATEGY, IOT_FLEET_MONITORING, THAILAND_ETS } from '../src/config/thai-climate-act.js';
 import type { OperationalKPIs, ExecutiveSummary } from '../src/operations/reporting.js';
@@ -398,38 +398,7 @@ function proofAsanaTasks(kpis: OperationalKPIs): void {
   weekEnd.setDate(weekEnd.getDate() + 7);
   const dueOn = weekEnd.toISOString().split('T')[0];
 
-  const teams = [
-    { team: 'Growth Engine', tasks: [
-      `Review ${kpis.crm.totalLeads} leads — qualify top 5 for IFS channel`,
-      `Conversion rate: ${kpis.crm.conversionRate.toFixed(1)}% — ${kpis.crm.conversionRate < 20 ? 'ACTION: improve follow-up cadence' : 'on track'}`,
-      'Update IFS Green FM pipeline with Climate Act compliance messaging',
-    ]},
-    { team: 'Service Delivery', tasks: [
-      `${kpis.jobs.activeJobs} active jobs — ensure all have assigned pilots/drones`,
-      `Fleet availability: ${kpis.fleet.availability.toFixed(1)}% — ${kpis.fleet.maintenanceAlerts > 0 ? `resolve ${kpis.fleet.maintenanceAlerts} maintenance alerts` : 'clear'}`,
-      'Verify IoT sensor calibration on all deployed drones',
-    ]},
-    { team: 'Compliance & Safety', tasks: [
-      `Preflight pass rate: ${kpis.safety.preflightPassRate.toFixed(0)}% — ${kpis.safety.preflightPassRate < 95 ? 'ACTION: review failed checklists' : 'meets target'}`,
-      `Days without incident: ${kpis.safety.daysWithoutIncident}`,
-      'Update GHG reporting for TGO registry — Climate Change Act compliance',
-    ]},
-    { team: 'Market Intelligence', tasks: [
-      'Score new building opportunities against Climate Act readiness criteria',
-      'Monitor ETS allowance pricing and carbon credit market updates',
-      'Track competitor ESG positioning vs IFS Green FM strategy',
-    ]},
-    { team: 'Ecosystem Builder', tasks: [
-      'IFS Green FM materials — incorporate Climate Change Act messaging',
-      'Smart Green IoT dashboard — verify GHG calculation engine accuracy',
-      'Prepare T-VER credit application for next batch of verified missions',
-    ]},
-    { team: 'Revenue Operations', tasks: [
-      `Gross revenue: THB ${(kpis.revenue.grossRevenue / 1_000_000).toFixed(2)}M — EBITDA: ${kpis.revenue.ebitdaMargin.toFixed(1)}%`,
-      `Invoices: ${kpis.revenue.invoicesPaid} paid | ${kpis.revenue.invoicesOverdue} overdue`,
-      'Model carbon credit revenue stream from verified drone missions',
-    ]},
-  ];
+  const teams = buildTeamTasks(kpis);
 
   for (const { team, tasks } of teams) {
     console.log(`\n  [${team}] — due ${dueOn}`);

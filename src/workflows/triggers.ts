@@ -96,7 +96,7 @@ export class TriggerManager {
 
   async fireByName(name: string): Promise<boolean> {
     for (const [id, trigger] of this.triggers) {
-      if (trigger.name === name || trigger.id === id) {
+      if (trigger.name === name || trigger.id === name) {
         await this.fire(id);
         return true;
       }

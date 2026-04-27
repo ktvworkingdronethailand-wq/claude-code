@@ -66,6 +66,40 @@ function dateSuffix(): string {
   return new Date().toISOString().split('T')[0]!;
 }
 
+export function formatRevenueTHB(gross: number): string {
+  return `THB ${(gross / 1_000_000).toFixed(2)}M`;
+}
+
+export function pct(value: number, decimals = 1): string {
+  return `${value.toFixed(decimals)}%`;
+}
+
+export function activeAgentCount(healths: WeeklyReportInput['agentHealths']): number {
+  return healths.filter(a => a.health.status === 'active').length;
+}
+
+type KpiStatus = 'on-track' | 'at-risk' | 'off-track';
+
+function kpiStatus(value: number, threshold: number, offTrackThreshold?: number): KpiStatus {
+  if (offTrackThreshold !== undefined && value < offTrackThreshold) return 'off-track';
+  return value >= threshold ? 'on-track' : 'at-risk';
+}
+
+function buildKpiRows(input: WeeklyReportInput): { team: string; name: string; value: string; target: string; status: KpiStatus }[] {
+  return [
+    { team: 'Service Delivery', name: 'Fleet Utilization', value: pct(input.kpis.fleet.utilization), target: '80%', status: kpiStatus(input.kpis.fleet.utilization, 70) },
+    { team: 'Service Delivery', name: 'Fleet Availability', value: pct(input.kpis.fleet.availability), target: '90%', status: kpiStatus(input.kpis.fleet.availability, 80) },
+    { team: 'Compliance & Safety', name: 'Preflight Pass Rate', value: pct(input.kpis.safety.preflightPassRate, 0), target: '95%', status: kpiStatus(input.kpis.safety.preflightPassRate, 95) },
+    { team: 'Compliance & Safety', name: 'Days Without Incident', value: String(input.kpis.safety.daysWithoutIncident), target: '365', status: 'on-track' },
+    { team: 'Revenue Operations', name: 'Gross Revenue', value: formatRevenueTHB(input.kpis.revenue.grossRevenue), target: 'THB 180.18M', status: kpiStatus(input.kpis.revenue.ebitdaMargin, 40) },
+    { team: 'Revenue Operations', name: 'EBITDA Margin', value: pct(input.kpis.revenue.ebitdaMargin), target: '77.7%', status: kpiStatus(input.kpis.revenue.ebitdaMargin, 60) },
+    { team: 'Growth Engine', name: 'Total Leads', value: String(input.kpis.crm.totalLeads), target: '50', status: kpiStatus(input.kpis.crm.totalLeads, 30) },
+    { team: 'Growth Engine', name: 'Conversion Rate', value: pct(input.kpis.crm.conversionRate), target: '25%', status: kpiStatus(input.kpis.crm.conversionRate, 20) },
+    { team: 'Ecosystem Builder', name: 'GHG Reduction', value: '96%', target: '90%', status: 'on-track' },
+    { team: 'Ecosystem Builder', name: 'Carbon Credits (T-VER)', value: 'Active', target: 'Generating', status: 'on-track' },
+  ];
+}
+
 // ── Orchestrator ─────────────────────────────────────────────
 
 export class AutomatedReportingOrchestrator {
@@ -110,7 +144,7 @@ export class AutomatedReportingOrchestrator {
 
   async pushToNotion(input: WeeklyReportInput): Promise<ReportDistributionResult> {
     const start = Date.now();
-    const activeAgents = input.agentHealths.filter(a => a.health.status === 'active').length;
+    const online = activeAgentCount(input.agentHealths);
 
     const lines: string[] = [
       `# Weekly Ops Report — ${input.period}`,
@@ -137,14 +171,14 @@ export class AutomatedReportingOrchestrator {
       '', '---', '', '## Key Metrics', '',
       '| Metric | Value |',
       '|--------|-------|',
-      `| Agents Online | ${activeAgents}/${input.agentHealths.length} |`,
-      `| Fleet Utilization | ${input.kpis.fleet.utilization.toFixed(1)}% |`,
-      `| Fleet Availability | ${input.kpis.fleet.availability.toFixed(1)}% |`,
+      `| Agents Online | ${online}/${input.agentHealths.length} |`,
+      `| Fleet Utilization | ${pct(input.kpis.fleet.utilization)} |`,
+      `| Fleet Availability | ${pct(input.kpis.fleet.availability)} |`,
       `| Safety | ${input.kpis.safety.daysWithoutIncident} days incident-free |`,
-      `| Preflight Pass Rate | ${input.kpis.safety.preflightPassRate.toFixed(0)}% |`,
-      `| Revenue | THB ${(input.kpis.revenue.grossRevenue / 1_000_000).toFixed(2)}M |`,
-      `| EBITDA | ${input.kpis.revenue.ebitdaMargin.toFixed(1)}% |`,
-      `| CRM | ${input.kpis.crm.totalLeads} leads, ${input.kpis.crm.conversionRate.toFixed(1)}% conv |`,
+      `| Preflight Pass Rate | ${pct(input.kpis.safety.preflightPassRate, 0)} |`,
+      `| Revenue | ${formatRevenueTHB(input.kpis.revenue.grossRevenue)} |`,
+      `| EBITDA | ${pct(input.kpis.revenue.ebitdaMargin)} |`,
+      `| CRM | ${input.kpis.crm.totalLeads} leads, ${pct(input.kpis.crm.conversionRate)} conv |`,
       `| Jobs | ${input.kpis.jobs.activeJobs} active, ${input.kpis.jobs.completedThisPeriod} completed |`,
       `| GHG Reduction | 96% vs rope access |`,
       `| Carbon Credits | T-VER Active |`,
@@ -174,56 +208,7 @@ export class AutomatedReportingOrchestrator {
     weekEnd.setDate(weekEnd.getDate() + 7);
     const dueOn = weekEnd.toISOString().split('T')[0];
 
-    const teamTasks: { team: string; tasks: string[] }[] = [
-      {
-        team: 'Growth Engine',
-        tasks: [
-          `Review ${input.kpis.crm.totalLeads} leads — qualify top 5 for IFS channel`,
-          `Conversion rate: ${input.kpis.crm.conversionRate.toFixed(1)}% — ${input.kpis.crm.conversionRate < 20 ? 'ACTION: improve follow-up cadence' : 'on track'}`,
-          'Update IFS Green FM pipeline with Climate Act compliance messaging',
-        ],
-      },
-      {
-        team: 'Service Delivery',
-        tasks: [
-          `${input.kpis.jobs.activeJobs} active jobs — ensure all have assigned pilots/drones`,
-          `Fleet availability: ${input.kpis.fleet.availability.toFixed(1)}% — ${input.kpis.fleet.maintenanceAlerts > 0 ? `resolve ${input.kpis.fleet.maintenanceAlerts} maintenance alerts` : 'clear'}`,
-          'Verify IoT sensor calibration on all deployed drones',
-        ],
-      },
-      {
-        team: 'Compliance & Safety',
-        tasks: [
-          `Preflight pass rate: ${input.kpis.safety.preflightPassRate.toFixed(0)}% — ${input.kpis.safety.preflightPassRate < 95 ? 'ACTION: review failed checklists' : 'meets target'}`,
-          `Days without incident: ${input.kpis.safety.daysWithoutIncident}`,
-          'Update GHG reporting for TGO registry — Climate Change Act compliance',
-        ],
-      },
-      {
-        team: 'Market Intelligence',
-        tasks: [
-          'Score new building opportunities against Climate Act readiness criteria',
-          'Monitor ETS allowance pricing and carbon credit market updates',
-          'Track competitor ESG positioning vs IFS Green FM strategy',
-        ],
-      },
-      {
-        team: 'Ecosystem Builder',
-        tasks: [
-          'IFS Green FM marketing materials — incorporate Climate Change Act messaging',
-          'Smart Green IoT dashboard — verify GHG calculation engine accuracy',
-          'Prepare T-VER credit application for next batch of verified missions',
-        ],
-      },
-      {
-        team: 'Revenue Operations',
-        tasks: [
-          `Gross revenue: THB ${(input.kpis.revenue.grossRevenue / 1_000_000).toFixed(2)}M — EBITDA: ${input.kpis.revenue.ebitdaMargin.toFixed(1)}%`,
-          `Invoices: ${input.kpis.revenue.invoicesPaid} paid | ${input.kpis.revenue.invoicesOverdue} overdue`,
-          'Model carbon credit revenue stream from verified drone missions',
-        ],
-      },
-    ];
+    const teamTasks = buildTeamTasks(input.kpis);
 
     const mdLines: string[] = [
       `# Asana Weekly Tasks — ${input.period}`,
@@ -268,18 +253,7 @@ export class AutomatedReportingOrchestrator {
       lastActivity: a.health.lastActivity,
     }));
 
-    const kpiRows = [
-      { team: 'Service Delivery', name: 'Fleet Utilization', value: `${input.kpis.fleet.utilization.toFixed(1)}%`, target: '80%', status: input.kpis.fleet.utilization >= 70 ? 'on-track' : 'at-risk' },
-      { team: 'Service Delivery', name: 'Fleet Availability', value: `${input.kpis.fleet.availability.toFixed(1)}%`, target: '90%', status: input.kpis.fleet.availability >= 80 ? 'on-track' : 'at-risk' },
-      { team: 'Compliance & Safety', name: 'Preflight Pass Rate', value: `${input.kpis.safety.preflightPassRate.toFixed(0)}%`, target: '95%', status: input.kpis.safety.preflightPassRate >= 95 ? 'on-track' : 'off-track' },
-      { team: 'Compliance & Safety', name: 'Days Without Incident', value: String(input.kpis.safety.daysWithoutIncident), target: '365', status: 'on-track' },
-      { team: 'Revenue Operations', name: 'Gross Revenue', value: `THB ${(input.kpis.revenue.grossRevenue / 1_000_000).toFixed(2)}M`, target: 'THB 180.18M', status: input.kpis.revenue.ebitdaMargin >= 40 ? 'on-track' : 'at-risk' },
-      { team: 'Revenue Operations', name: 'EBITDA Margin', value: `${input.kpis.revenue.ebitdaMargin.toFixed(1)}%`, target: '77.7%', status: input.kpis.revenue.ebitdaMargin >= 60 ? 'on-track' : 'at-risk' },
-      { team: 'Growth Engine', name: 'Total Leads', value: String(input.kpis.crm.totalLeads), target: '50', status: input.kpis.crm.totalLeads >= 30 ? 'on-track' : 'at-risk' },
-      { team: 'Growth Engine', name: 'Conversion Rate', value: `${input.kpis.crm.conversionRate.toFixed(1)}%`, target: '25%', status: input.kpis.crm.conversionRate >= 20 ? 'on-track' : 'at-risk' },
-      { team: 'Ecosystem Builder', name: 'GHG Reduction', value: '96%', target: '90%', status: 'on-track' },
-      { team: 'Ecosystem Builder', name: 'Carbon Credits (T-VER)', value: 'Active', target: 'Generating', status: 'on-track' },
-    ];
+    const kpiRows = buildKpiRows(input);
 
     const data = { generatedAt: new Date().toISOString(), period: input.period, agents: agentRows, kpis: kpiRows };
     const filepath = writeReport('airtable', `kpi-snapshot-${dateSuffix()}.json`, JSON.stringify(data, null, 2));
@@ -307,18 +281,14 @@ export class AutomatedReportingOrchestrator {
       };
     });
 
-    const kpiSnapshots = [
-      { team: 'Service Delivery', kpi: 'fleet_utilization_pct', value: input.kpis.fleet.utilization, unit: '%', target: '80', status: input.kpis.fleet.utilization >= 70 ? 'on-track' : 'at-risk' },
-      { team: 'Service Delivery', kpi: 'fleet_availability_pct', value: input.kpis.fleet.availability, unit: '%', target: '90', status: input.kpis.fleet.availability >= 80 ? 'on-track' : 'at-risk' },
-      { team: 'Compliance & Safety', kpi: 'preflight_pass_rate_pct', value: input.kpis.safety.preflightPassRate, unit: '%', target: '95', status: input.kpis.safety.preflightPassRate >= 95 ? 'on-track' : 'off-track' },
-      { team: 'Compliance & Safety', kpi: 'days_without_incident', value: input.kpis.safety.daysWithoutIncident, unit: 'days', target: '365', status: 'on-track' },
-      { team: 'Revenue Operations', kpi: 'gross_revenue_thb', value: input.kpis.revenue.grossRevenue, unit: 'THB', target: '180180000', status: input.kpis.revenue.ebitdaMargin >= 40 ? 'on-track' : 'at-risk' },
-      { team: 'Revenue Operations', kpi: 'ebitda_margin_pct', value: input.kpis.revenue.ebitdaMargin, unit: '%', target: '77.7', status: input.kpis.revenue.ebitdaMargin >= 60 ? 'on-track' : 'at-risk' },
-      { team: 'Growth Engine', kpi: 'total_leads', value: input.kpis.crm.totalLeads, unit: 'leads', target: '50', status: input.kpis.crm.totalLeads >= 30 ? 'on-track' : 'at-risk' },
-      { team: 'Growth Engine', kpi: 'conversion_rate_pct', value: input.kpis.crm.conversionRate, unit: '%', target: '25', status: input.kpis.crm.conversionRate >= 20 ? 'on-track' : 'at-risk' },
-      { team: 'Ecosystem Builder', kpi: 'ghg_reduction_pct', value: 96, unit: '%', target: '90', status: 'on-track' },
-      { team: 'Ecosystem Builder', kpi: 'carbon_credits_status', value: 'Active', unit: 'status', target: 'Generating', status: 'on-track' },
-    ];
+    const kpiSnapshots = buildKpiRows(input).map(row => ({
+      team: row.team,
+      kpi: row.name.toLowerCase().replace(/[^a-z0-9]+/g, '_'),
+      value: row.value,
+      unit: row.value.includes('%') ? '%' : row.value.startsWith('THB') ? 'THB' : 'value',
+      target: row.target,
+      status: row.status,
+    }));
 
     const activity = {
       team: 'Revenue Operations',
@@ -339,7 +309,7 @@ export class AutomatedReportingOrchestrator {
 
   async pushToGamma(input: WeeklyReportInput): Promise<ReportDistributionResult> {
     const start = Date.now();
-    const onlineAgents = input.agentHealths.filter(a => a.health.status === 'active').length;
+    const online = activeAgentCount(input.agentHealths);
 
     const slides: string[] = [
       `# KTV Weekly Status — ${input.period}`,
@@ -350,9 +320,9 @@ export class AutomatedReportingOrchestrator {
       '',
       `**${input.summary.headline}**`,
       '',
-      `- Agents Online: ${onlineAgents}/${input.agentHealths.length}`,
+      `- Agents Online: ${online}/${input.agentHealths.length}`,
       `- Missions Completed: ${input.kpis.jobs.completedThisPeriod}`,
-      `- Revenue: THB ${(input.kpis.revenue.grossRevenue / 1_000_000).toFixed(2)}M`,
+      `- Revenue: ${formatRevenueTHB(input.kpis.revenue.grossRevenue)}`,
       `- Incidents: ${input.kpis.safety.incidentRate > 0 ? '1' : '0'}`,
       '',
       '---',
@@ -361,8 +331,8 @@ export class AutomatedReportingOrchestrator {
       '',
       `| Metric | Value |`,
       `|--------|-------|`,
-      `| Fleet Utilization | ${input.kpis.fleet.utilization.toFixed(1)}% |`,
-      `| Fleet Availability | ${input.kpis.fleet.availability.toFixed(1)}% |`,
+      `| Fleet Utilization | ${pct(input.kpis.fleet.utilization)} |`,
+      `| Fleet Availability | ${pct(input.kpis.fleet.availability)} |`,
       `| Active Jobs | ${input.kpis.jobs.activeJobs} |`,
       `| Avg Cycle Time | ${input.kpis.jobs.avgCycleTimeDays} days |`,
       '',
@@ -373,7 +343,7 @@ export class AutomatedReportingOrchestrator {
       `| Metric | Value |`,
       `|--------|-------|`,
       `| Days Without Incident | ${input.kpis.safety.daysWithoutIncident} |`,
-      `| Preflight Pass Rate | ${input.kpis.safety.preflightPassRate.toFixed(0)}% |`,
+      `| Preflight Pass Rate | ${pct(input.kpis.safety.preflightPassRate, 0)} |`,
       `| Risk Assessments | ${input.kpis.safety.riskAssessmentsCompleted} completed |`,
       `| CAAT Compliance | 100% |`,
       '',
@@ -383,10 +353,10 @@ export class AutomatedReportingOrchestrator {
       '',
       `| Metric | Value |`,
       `|--------|-------|`,
-      `| Gross Revenue | THB ${(input.kpis.revenue.grossRevenue / 1_000_000).toFixed(2)}M |`,
-      `| EBITDA Margin | ${input.kpis.revenue.ebitdaMargin.toFixed(1)}% |`,
+      `| Gross Revenue | ${formatRevenueTHB(input.kpis.revenue.grossRevenue)} |`,
+      `| EBITDA Margin | ${pct(input.kpis.revenue.ebitdaMargin)} |`,
       `| Total Leads | ${input.kpis.crm.totalLeads} |`,
-      `| Conversion Rate | ${input.kpis.crm.conversionRate.toFixed(1)}% |`,
+      `| Conversion Rate | ${pct(input.kpis.crm.conversionRate)} |`,
       `| NPS Score | ${input.kpis.crm.npsScore} |`,
       '',
       '---',
@@ -419,7 +389,7 @@ export class AutomatedReportingOrchestrator {
 
   async pushToCanva(input: WeeklyReportInput): Promise<ReportDistributionResult> {
     const start = Date.now();
-    const onlineAgents = input.agentHealths.filter(a => a.health.status === 'active').length;
+    const online = activeAgentCount(input.agentHealths);
 
     const deck: string[] = [
       `# KTV Pitch Deck — ${input.period}`,
@@ -442,7 +412,7 @@ export class AutomatedReportingOrchestrator {
       '## The KTV Solution',
       '',
       `- ${input.agentHealths.length} AI agents managing operations autonomously`,
-      `- ${onlineAgents}/${input.agentHealths.length} agents online this week`,
+      `- ${online}/${input.agentHealths.length} agents online this week`,
       '- 16 DJI enterprise drones, 10 certified pilots',
       '- Zero workers at height, zero fall risk',
       '',
@@ -453,10 +423,10 @@ export class AutomatedReportingOrchestrator {
       `| KPI | Value |`,
       `|-----|-------|`,
       `| Missions Completed | ${input.kpis.jobs.completedThisPeriod} |`,
-      `| Revenue | THB ${(input.kpis.revenue.grossRevenue / 1_000_000).toFixed(2)}M |`,
-      `| EBITDA | ${input.kpis.revenue.ebitdaMargin.toFixed(1)}% |`,
+      `| Revenue | ${formatRevenueTHB(input.kpis.revenue.grossRevenue)} |`,
+      `| EBITDA | ${pct(input.kpis.revenue.ebitdaMargin)} |`,
       `| Safety Record | ${input.kpis.safety.daysWithoutIncident} days incident-free |`,
-      `| Fleet Utilization | ${input.kpis.fleet.utilization.toFixed(1)}% |`,
+      `| Fleet Utilization | ${pct(input.kpis.fleet.utilization)} |`,
       '',
       '---',
       '',
@@ -538,7 +508,7 @@ export class AutomatedReportingOrchestrator {
   // ── Format Helpers ────────────────────────────────────────
 
   private formatEmailBody(input: WeeklyReportInput): string {
-    const activeAgents = input.agentHealths.filter(a => a.health.status === 'active').length;
+    const activeAgents = activeAgentCount(input.agentHealths);
     const alertsHtml = input.summary.alerts.length > 0
       ? input.summary.alerts.map(a => `<li style="color:#d32f2f">${a}</li>`).join('')
       : '<li style="color:#2e7d32">No alerts — all systems nominal</li>';
@@ -552,10 +522,10 @@ export class AutomatedReportingOrchestrator {
 <p><strong>${input.summary.headline}</strong></p>
 <table style="width:100%;border-collapse:collapse;margin:16px 0">
 <tr style="background:#e8eaf6"><td style="padding:8px;border:1px solid #ccc"><strong>Agents Online</strong></td><td style="padding:8px;border:1px solid #ccc">${activeAgents}/${input.agentHealths.length}</td></tr>
-<tr><td style="padding:8px;border:1px solid #ccc"><strong>Fleet</strong></td><td style="padding:8px;border:1px solid #ccc">Util: ${input.kpis.fleet.utilization.toFixed(1)}% | Avail: ${input.kpis.fleet.availability.toFixed(1)}%</td></tr>
-<tr style="background:#e8eaf6"><td style="padding:8px;border:1px solid #ccc"><strong>Safety</strong></td><td style="padding:8px;border:1px solid #ccc">${input.kpis.safety.daysWithoutIncident} days incident-free | Preflight: ${input.kpis.safety.preflightPassRate.toFixed(0)}%</td></tr>
-<tr><td style="padding:8px;border:1px solid #ccc"><strong>Revenue</strong></td><td style="padding:8px;border:1px solid #ccc">THB ${(input.kpis.revenue.grossRevenue / 1_000_000).toFixed(2)}M gross | EBITDA: ${input.kpis.revenue.ebitdaMargin.toFixed(1)}%</td></tr>
-<tr style="background:#e8eaf6"><td style="padding:8px;border:1px solid #ccc"><strong>CRM</strong></td><td style="padding:8px;border:1px solid #ccc">${input.kpis.crm.totalLeads} leads | ${input.kpis.crm.conversionRate.toFixed(1)}% conversion | NPS: ${input.kpis.crm.npsScore}</td></tr>
+<tr><td style="padding:8px;border:1px solid #ccc"><strong>Fleet</strong></td><td style="padding:8px;border:1px solid #ccc">Util: ${pct(input.kpis.fleet.utilization)} | Avail: ${pct(input.kpis.fleet.availability)}</td></tr>
+<tr style="background:#e8eaf6"><td style="padding:8px;border:1px solid #ccc"><strong>Safety</strong></td><td style="padding:8px;border:1px solid #ccc">${input.kpis.safety.daysWithoutIncident} days incident-free | Preflight: ${pct(input.kpis.safety.preflightPassRate, 0)}</td></tr>
+<tr><td style="padding:8px;border:1px solid #ccc"><strong>Revenue</strong></td><td style="padding:8px;border:1px solid #ccc">${formatRevenueTHB(input.kpis.revenue.grossRevenue)} gross | EBITDA: ${pct(input.kpis.revenue.ebitdaMargin)}</td></tr>
+<tr style="background:#e8eaf6"><td style="padding:8px;border:1px solid #ccc"><strong>CRM</strong></td><td style="padding:8px;border:1px solid #ccc">${input.kpis.crm.totalLeads} leads | ${pct(input.kpis.crm.conversionRate)} conversion | NPS: ${input.kpis.crm.npsScore}</td></tr>
 <tr><td style="padding:8px;border:1px solid #ccc"><strong>Jobs</strong></td><td style="padding:8px;border:1px solid #ccc">${input.kpis.jobs.activeJobs} active | ${input.kpis.jobs.completedThisPeriod} completed</td></tr>
 <tr style="background:#e8eaf6"><td style="padding:8px;border:1px solid #ccc"><strong>ESG</strong></td><td style="padding:8px;border:1px solid #ccc">GHG reduction: 96% | Carbon credits: Active | IoT: Online</td></tr>
 </table>
@@ -568,7 +538,7 @@ ${input.summary.recommendations.length > 0 ? `<h2>Recommendations</h2><ul>${recs
   }
 
   private formatMarkdownReport(input: WeeklyReportInput): string {
-    const activeAgents = input.agentHealths.filter(a => a.health.status === 'active').length;
+    const online = activeAgentCount(input.agentHealths);
     const lines: string[] = [
       `# KTV Weekly Operations Report — ${input.period}`,
       '',
@@ -582,18 +552,18 @@ ${input.summary.recommendations.length > 0 ? `<h2>Recommendations</h2><ul>${recs
       '',
       `| Metric | Value |`,
       `|--------|-------|`,
-      `| Agents Online | ${activeAgents}/${input.agentHealths.length} |`,
-      `| Fleet Utilization | ${input.kpis.fleet.utilization.toFixed(1)}% |`,
-      `| Fleet Availability | ${input.kpis.fleet.availability.toFixed(1)}% |`,
+      `| Agents Online | ${online}/${input.agentHealths.length} |`,
+      `| Fleet Utilization | ${pct(input.kpis.fleet.utilization)} |`,
+      `| Fleet Availability | ${pct(input.kpis.fleet.availability)} |`,
       `| Maintenance Alerts | ${input.kpis.fleet.maintenanceAlerts} |`,
-      `| Preflight Pass Rate | ${input.kpis.safety.preflightPassRate.toFixed(0)}% |`,
+      `| Preflight Pass Rate | ${pct(input.kpis.safety.preflightPassRate, 0)} |`,
       `| Days Without Incident | ${input.kpis.safety.daysWithoutIncident} |`,
       `| Active Jobs | ${input.kpis.jobs.activeJobs} |`,
       `| Completed This Period | ${input.kpis.jobs.completedThisPeriod} |`,
-      `| Gross Revenue | THB ${(input.kpis.revenue.grossRevenue / 1_000_000).toFixed(2)}M |`,
-      `| EBITDA Margin | ${input.kpis.revenue.ebitdaMargin.toFixed(1)}% |`,
+      `| Gross Revenue | ${formatRevenueTHB(input.kpis.revenue.grossRevenue)} |`,
+      `| EBITDA Margin | ${pct(input.kpis.revenue.ebitdaMargin)} |`,
       `| Total Leads | ${input.kpis.crm.totalLeads} |`,
-      `| Conversion Rate | ${input.kpis.crm.conversionRate.toFixed(1)}% |`,
+      `| Conversion Rate | ${pct(input.kpis.crm.conversionRate)} |`,
       `| NPS Score | ${input.kpis.crm.npsScore} |`,
       `| GHG Reduction | 96% vs rope access |`,
       `| Carbon Credits | T-VER Active |`,
@@ -636,6 +606,59 @@ ${input.summary.recommendations.length > 0 ? `<h2>Recommendations</h2><ul>${recs
 }
 
 // ── Factory ──────────────────────────────────────────────────
+
+export function buildTeamTasks(kpis: WeeklyReportInput['kpis']): { team: string; tasks: string[] }[] {
+  return [
+    {
+      team: 'Growth Engine',
+      tasks: [
+        `Review ${kpis.crm.totalLeads} leads — qualify top 5 for IFS channel`,
+        `Conversion rate: ${pct(kpis.crm.conversionRate)} — ${kpis.crm.conversionRate < 20 ? 'ACTION: improve follow-up cadence' : 'on track'}`,
+        'Update IFS Green FM pipeline with Climate Act compliance messaging',
+      ],
+    },
+    {
+      team: 'Service Delivery',
+      tasks: [
+        `${kpis.jobs.activeJobs} active jobs — ensure all have assigned pilots/drones`,
+        `Fleet availability: ${pct(kpis.fleet.availability)} — ${kpis.fleet.maintenanceAlerts > 0 ? `resolve ${kpis.fleet.maintenanceAlerts} maintenance alerts` : 'clear'}`,
+        'Verify IoT sensor calibration on all deployed drones',
+      ],
+    },
+    {
+      team: 'Compliance & Safety',
+      tasks: [
+        `Preflight pass rate: ${pct(kpis.safety.preflightPassRate, 0)} — ${kpis.safety.preflightPassRate < 95 ? 'ACTION: review failed checklists' : 'meets target'}`,
+        `Days without incident: ${kpis.safety.daysWithoutIncident}`,
+        'Update GHG reporting for TGO registry — Climate Change Act compliance',
+      ],
+    },
+    {
+      team: 'Market Intelligence',
+      tasks: [
+        'Score new building opportunities against Climate Act readiness criteria',
+        'Monitor ETS allowance pricing and carbon credit market updates',
+        'Track competitor ESG positioning vs IFS Green FM strategy',
+      ],
+    },
+    {
+      team: 'Ecosystem Builder',
+      tasks: [
+        'IFS Green FM marketing materials — incorporate Climate Change Act messaging',
+        'Smart Green IoT dashboard — verify GHG calculation engine accuracy',
+        'Prepare T-VER credit application for next batch of verified missions',
+      ],
+    },
+    {
+      team: 'Revenue Operations',
+      tasks: [
+        `Gross revenue: ${formatRevenueTHB(kpis.revenue.grossRevenue)} — EBITDA: ${pct(kpis.revenue.ebitdaMargin)}`,
+        `Invoices: ${kpis.revenue.invoicesPaid} paid | ${kpis.revenue.invoicesOverdue} overdue`,
+        'Model carbon credit revenue stream from verified drone missions',
+      ],
+    },
+  ];
+}
 
 export function createReportingOrchestrator(): AutomatedReportingOrchestrator {
   return new AutomatedReportingOrchestrator();

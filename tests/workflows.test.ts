@@ -313,7 +313,7 @@ async function testOperationsBrain(): Promise<void> {
   // Verify brain status
   const status = brain.getStatus();
   assert(status.running === true, 'Brain is running');
-  assert(status.workflows.definitionsRegistered === 10, '10 workflows registered');
+  assert(status.workflows.definitionsRegistered === 15, '15 workflows registered (10 core + 5 connected apps)');
   assert(status.triggers.length === 6, '6 triggers registered');
   assert(status.reactiveListeners > 0, 'Reactive listeners active');
 

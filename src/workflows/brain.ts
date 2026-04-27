@@ -63,8 +63,7 @@ export class OperationsBrain {
     console.log(`[Brain] ${allWorkflows.length} workflows registered (${ALL_WORKFLOWS.length} core + ${CONNECTED_APP_WORKFLOWS.length} connected apps)`);
 
     // 2. Register automated triggers
-    const executor = this.createExecutor();
-    const defaultTriggers = createDefaultTriggers(this.eventBus, executor);
+    const defaultTriggers = createDefaultTriggers(this.eventBus, this.createExecutor());
     for (const trigger of defaultTriggers) {
       this.triggerManager.register(trigger);
     }

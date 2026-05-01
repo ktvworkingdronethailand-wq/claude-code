@@ -66,6 +66,8 @@ All types in `src/types/index.ts` (~387 lines). Key domains: AgentRole/AgentMess
 
 - `ktv-operations.ts` — Company info, 6 service lines with pricing, CAAT regulations (90m max altitude, 9km airport buffer), fleet config (16 DJI drones), financial rules (7% VAT, 7% royalty, 20% corp tax)
 - `jv-partners.ts` — IFS Thailand JV structure, Smart Green ESG platform, financial projections
+- `thai-climate-act.ts` — Thailand ETS, GHG reporting, carbon tax, IoT fleet monitoring, ESG compliance matrix
+- `shell-stations.ts` — Shell 400-station IoT config, sensor hub specs, 3-tier pricing, data provenance pipeline
 
 ### Python Mastermind (src/mastermind/)
 
@@ -232,6 +234,65 @@ The `pushOneBangkokPitchDeck()` method generates from this verified content:
 - **Investor Financial Report** — USD 1.455M investment, 1350% ROI, 257% IRR, 6.3mo payback, 6 service lines, fleet composition, CAAT compliance
 - **ESG Performance Report** — GRESB indicators, 96% GHG reduction, 0.3 L/sqm water, assurance chain, disclosure artifacts
 - **Weekly Ops Status** — dynamic agent/mission/revenue/incident summary for management
+
+## Shell Fuel Station IoT Intelligence Strategy
+
+KTV drone vans servicing Shell's 400 Thai fuel stations carry an IoT sensor hub that captures high-value operational data at every visit. The cleaning contract is the distribution channel — the data is the product.
+
+### Drone Van Sensor Hub
+
+Each van runs a Raspberry Pi 4B (8 GB) edge gateway with:
+
+| Sensor | Model | Data Captured |
+|--------|-------|---------------|
+| GPS | u-blox ZED-F9P (RTK) | Station coords, route, dwell time |
+| Camera | 4K + thermal | Before/after, equipment thermal, structural |
+| Air quality | Sensirion SEN5x | PM2.5, PM10, VOC, NOx, temp, humidity |
+| Weather | Davis Vantage Vue | Wind, rain, barometric, solar |
+| Power | Shelly Pro 3EM | Energy per circuit, PF, harmonics |
+| Water | Seametrics iMAG | Flow rate, total volume per clean |
+| Chemical | Sensorex SAM-1 | pH, conductivity, chemical concentration |
+| Telemetry | MAVLink | Battery, motor RPM, vibration, flight hours |
+
+### Data Provenance Pipeline
+
+Every reading follows a tamper-proof chain:
+
+```
+Sensor → HMAC-SHA256 (device key) → DataProvenance{hash, deviceId, timestamp, gps}
+  → KMS RSA-4096 envelope encryption → S3 Object Lock (GOVERNANCE, 7 yr)
+```
+
+- **Device signing**: HMAC-SHA256 with per-device key at capture time
+- **Envelope encryption**: AWS KMS RSA-4096 wraps AES-256-GCM data key
+- **Immutable storage**: S3 Object Lock GOVERNANCE mode, 7-year retention
+- **Audit trail**: Every access logged, hash chain verifiable end-to-end
+
+### 7 Value Layers for Shell
+
+| # | Layer | What KTV Delivers | Shell Value |
+|---|-------|--------------------|-------------|
+| 1 | Predictive Maintenance | Equipment thermal + power anomalies → ML failure prediction | Prevent unplanned downtime, reduce maintenance cost 30-40% |
+| 2 | ESG & Compliance Reporting | Air quality, water, chemical, energy → GRESB/GRI/CDP-ready data | Automated sustainability reporting, audit-grade evidence |
+| 3 | Proof of Service | Timestamped GPS + before/after imagery + sensor readings | Verify SLA compliance, eliminate disputes, insurance evidence |
+| 4 | Asset Management | Structural imaging, thermal profiles, condition scoring | Digital twin baseline, lifecycle cost optimization |
+| 5 | Operational Benchmarking | Cross-station energy, water, chemical consumption analytics | Identify top/bottom performers, standardize best practices |
+| 6 | Safety & Compliance Records | Environmental readings, equipment condition, incident data | Regulatory audit readiness, risk reduction, liability protection |
+| 7 | Carbon Footprint (Scope 3) | Energy, water, chemical, transport data → GHG calculations | Scope 3 supply chain emissions, carbon credit eligibility |
+
+### Pricing Model (400 Stations)
+
+| Tier | What's Included | Price/Station/Month | Annual Revenue |
+|------|----------------|--------------------:|---------------:|
+| **Base** | Cleaning + proof-of-service photos + GPS logs | $0 (included in cleaning contract) | — |
+| **Standard** | Base + predictive maintenance alerts + ESG data feeds + benchmarking | $20/station | $96,000/yr |
+| **Premium** | Standard + real-time API + digital twin data + carbon accounting + custom analytics | $75/station | $360,000/yr |
+
+Standard tier alone at 400 stations = **$96K/yr recurring data revenue** on top of the cleaning contract. Premium tier = **$360K/yr**. Data revenue scales with zero marginal cleaning cost.
+
+### Configuration
+
+Shell station config, sensor definitions, pricing tiers, and data provenance settings are in `src/config/shell-stations.ts` alongside the existing `thai-climate-act.ts` climate/ESG configuration. IoT fleet monitoring types are in `src/config/thai-climate-act.ts` (`IOT_FLEET_MONITORING`, `IFS_GREEN_FM_STRATEGY`, `ESG_COMPLIANCE_MATRIX`).
 
 ## Security
 

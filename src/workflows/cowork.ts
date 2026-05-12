@@ -703,6 +703,328 @@ export const COWORK_WORKFLOW_DAILY_BRIEFING: WorkflowDefinition = {
   ],
 };
 
+// ── Weekly Routine Definitions ──────────────────────────────────
+// Scheduled routines that run on specific days of the week
+
+export type RoutineDay = 'monday' | 'tuesday' | 'wednesday' | 'thursday' | 'friday';
+
+export interface WeeklyRoutine {
+  id: string;
+  name: string;
+  day: RoutineDay;
+  time: string;
+  teams: CoworkTeamId[];
+  description: string;
+  tasks: RoutineTask[];
+}
+
+export interface RoutineTask {
+  id: string;
+  name: string;
+  team: CoworkTeamId;
+  agent: AgentRole | StrategyAgent;
+  action: string;
+  outputKey: string;
+}
+
+export interface WeeklyReportEntry {
+  routineId: string;
+  day: RoutineDay;
+  completedAt: Date;
+  tasksCompleted: number;
+  tasksFailed: number;
+  results: Record<string, unknown>;
+}
+
+export const WEEKLY_ROUTINES: WeeklyRoutine[] = [
+  // ── Monday ──────────────────────────────────────────────────
+  {
+    id: 'routine-monday-market-scan',
+    name: 'Weekly Market Scan',
+    day: 'monday',
+    time: '09:00',
+    teams: ['intelligence', 'growth'],
+    description: 'Scan sectors, rank opportunities, route leads, check IFS equity progress',
+    tasks: [
+      { id: 'rm-scan', name: 'Scan new opportunities by sector', team: 'intelligence', agent: 'market_intelligence_strategist', action: 'scan-opportunities', outputKey: 'marketScan' },
+      { id: 'rm-rank', name: 'Rank opportunities by revenue', team: 'intelligence', agent: 'market_intelligence_strategist', action: 'rank-opportunities', outputKey: 'rankedOpps' },
+      { id: 'rm-route', name: 'Route new leads to IFS or Direct KTV', team: 'growth', agent: 'partner_strategy_architect', action: 'route-opportunity', outputKey: 'routing' },
+      { id: 'rm-equity', name: 'Check IFS equity milestone progress', team: 'growth', agent: 'partner_strategy_architect', action: 'check-equity-impact', outputKey: 'equityProgress' },
+    ],
+  },
+  {
+    id: 'routine-monday-capacity',
+    name: 'Weekly Capacity Planning',
+    day: 'monday',
+    time: '10:00',
+    teams: ['delivery', 'compliance'],
+    description: 'Forecast demand, review maintenance, check certs, plan crew assignments',
+    tasks: [
+      { id: 'rc-demand', name: 'Forecast demand for coming week', team: 'delivery', agent: 'operations_compliance_mission_planner', action: 'capacity-analysis', outputKey: 'demandForecast' },
+      { id: 'rc-maint', name: 'Review fleet maintenance schedule', team: 'delivery', agent: 'fleet-management', action: 'get-maintenance-alerts', outputKey: 'maintenanceAlerts' },
+      { id: 'rc-certs', name: 'Check pilot certifications expiry', team: 'compliance', agent: 'pilot-operations', action: 'check-certifications', outputKey: 'certStatus' },
+      { id: 'rc-crew', name: 'Plan crew assignments for booked jobs', team: 'delivery', agent: 'operations_compliance_mission_planner', action: 'plan-mission', outputKey: 'crewPlan' },
+    ],
+  },
+
+  // ── Tuesday ─────────────────────────────────────────────────
+  {
+    id: 'routine-tuesday-partners',
+    name: 'Partner Pipeline Review',
+    day: 'tuesday',
+    time: '09:00',
+    teams: ['ecosystem'],
+    description: 'Review partnerships, update equity tracking, check Smart Green adoption, identify targets',
+    tasks: [
+      { id: 'rt-partner', name: 'Review active partnership proposals', team: 'ecosystem', agent: 'partner_strategy_architect', action: 'evaluate-partnership', outputKey: 'partnerReview' },
+      { id: 'rt-equity', name: 'Update IFS equity contribution', team: 'ecosystem', agent: 'partner_strategy_architect', action: 'check-equity-impact', outputKey: 'equityUpdate' },
+      { id: 'rt-green', name: 'Review Smart Green adoption progress', team: 'ecosystem', agent: 'smart_green_product_orchestrator', action: 'assess-site', outputKey: 'greenProgress' },
+      { id: 'rt-targets', name: 'Identify new partnership targets', team: 'ecosystem', agent: 'sales_playbook_account_selector', action: 'prioritise-accounts', outputKey: 'partnerTargets' },
+    ],
+  },
+  {
+    id: 'routine-tuesday-sales',
+    name: 'Sales Pipeline Grooming',
+    day: 'tuesday',
+    time: '14:00',
+    teams: ['growth', 'revenue'],
+    description: 'Score accounts, flag stalled leads, generate proposals, update playbooks',
+    tasks: [
+      { id: 'rs-score', name: 'Score and rank all active accounts', team: 'growth', agent: 'sales_playbook_account_selector', action: 'prioritise-accounts', outputKey: 'accountScores' },
+      { id: 'rs-stalled', name: 'Flag leads stalled >72h', team: 'growth', agent: 'crm-sales', action: 'get-pipeline', outputKey: 'stalledLeads' },
+      { id: 'rs-proposal', name: 'Generate proposals for qualified leads', team: 'revenue', agent: 'deal_design_pitch_engineer', action: 'create-proposal', outputKey: 'proposals' },
+      { id: 'rs-playbook', name: 'Update sector playbooks with new wins', team: 'growth', agent: 'sales_playbook_account_selector', action: 'create-playbook', outputKey: 'playbookUpdate' },
+    ],
+  },
+
+  // ── Wednesday ───────────────────────────────────────────────
+  {
+    id: 'routine-wednesday-safety',
+    name: 'Mid-Week Safety Review',
+    day: 'wednesday',
+    time: '08:00',
+    teams: ['compliance'],
+    description: 'WTD incident summary, pre-flight analysis, pilot check, compliance gaps',
+    tasks: [
+      { id: 'rw-incidents', name: 'Week-to-date incident summary', team: 'compliance', agent: 'safety-compliance', action: 'get-safety-stats', outputKey: 'wtdIncidents' },
+      { id: 'rw-preflight', name: 'Pre-flight failure analysis', team: 'compliance', agent: 'safety-compliance', action: 'assess-risk', outputKey: 'preflightAnalysis' },
+      { id: 'rw-pilots', name: 'Pilot performance mid-week check', team: 'compliance', agent: 'pilot-operations', action: 'check-certifications', outputKey: 'pilotMidweek' },
+      { id: 'rw-gaps', name: 'Compliance gap identification', team: 'compliance', agent: 'operations_compliance_mission_planner', action: 'check-caat', outputKey: 'complianceGaps' },
+    ],
+  },
+  {
+    id: 'routine-wednesday-fleet',
+    name: 'Fleet Optimization',
+    day: 'wednesday',
+    time: '10:00',
+    teams: ['delivery'],
+    description: 'Utilization analysis, maintenance optimization, battery rotation, mission efficiency',
+    tasks: [
+      { id: 'rf-util', name: 'Drone utilization analysis', team: 'delivery', agent: 'fleet-management', action: 'get-fleet-summary', outputKey: 'utilization' },
+      { id: 'rf-maint', name: 'Maintenance schedule optimization', team: 'delivery', agent: 'fleet-management', action: 'get-maintenance-alerts', outputKey: 'maintSchedule' },
+      { id: 'rf-efficiency', name: 'Mission efficiency review', team: 'delivery', agent: 'operations_compliance_mission_planner', action: 'assess-feasibility', outputKey: 'missionEfficiency' },
+    ],
+  },
+
+  // ── Thursday ────────────────────────────────────────────────
+  {
+    id: 'routine-thursday-revenue',
+    name: 'Revenue Operations Review',
+    day: 'thursday',
+    time: '09:00',
+    teams: ['revenue', 'growth'],
+    description: 'WTD revenue, collections, deal guardrails, carbon credits, NPS review',
+    tasks: [
+      { id: 'rr-revenue', name: 'Week-to-date revenue tracking', team: 'revenue', agent: 'finance-invoicing', action: 'get-financial-summary', outputKey: 'wtdRevenue' },
+      { id: 'rr-overdue', name: 'Invoice collection status', team: 'revenue', agent: 'finance-invoicing', action: 'get-overdue-invoices', outputKey: 'overdueStatus' },
+      { id: 'rr-guardrails', name: 'Deal economics validation', team: 'revenue', agent: 'financial_model_capital_planner', action: 'check-guardrails', outputKey: 'guardrailCheck' },
+      { id: 'rr-carbon', name: 'Carbon credit revenue tracking', team: 'revenue', agent: 'financial_model_capital_planner', action: 'analyze-carbon', outputKey: 'carbonCredits' },
+      { id: 'rr-nps', name: 'Client NPS review', team: 'growth', agent: 'crm-sales', action: 'record-nps', outputKey: 'npsReview' },
+    ],
+  },
+  {
+    id: 'routine-thursday-data',
+    name: 'Data Quality Audit',
+    day: 'thursday',
+    time: '14:00',
+    teams: ['delivery'],
+    description: 'Backup compliance, QA rates, processing times, ESG certificates',
+    tasks: [
+      { id: 'rd-backup', name: 'Review 4-copy backup compliance', team: 'delivery', agent: 'data-processing', action: 'get-processing-stats', outputKey: 'backupCompliance' },
+      { id: 'rd-qa', name: 'QA pass rate analysis', team: 'delivery', agent: 'data-processing', action: 'get-processing-stats', outputKey: 'qaAnalysis' },
+      { id: 'rd-esg', name: 'ESG certificate generation status', team: 'delivery', agent: 'data-processing', action: 'get-processing-stats', outputKey: 'esgStatus' },
+    ],
+  },
+
+  // ── Friday ──────────────────────────────────────────────────
+  {
+    id: 'routine-friday-kpi',
+    name: 'Weekly KPI Aggregation',
+    day: 'friday',
+    time: '09:00',
+    teams: ['delivery', 'compliance', 'revenue', 'growth', 'intelligence', 'ecosystem'],
+    description: 'Aggregate all KPIs from all 7 operations agents for weekly report',
+    tasks: [
+      { id: 'rk-fleet', name: 'Fleet KPIs', team: 'delivery', agent: 'fleet-management', action: 'get-fleet-summary', outputKey: 'fleetKpis' },
+      { id: 'rk-safety', name: 'Safety KPIs', team: 'compliance', agent: 'safety-compliance', action: 'get-safety-stats', outputKey: 'safetyKpis' },
+      { id: 'rk-finance', name: 'Revenue KPIs', team: 'revenue', agent: 'finance-invoicing', action: 'get-financial-summary', outputKey: 'revenueKpis' },
+      { id: 'rk-crm', name: 'CRM KPIs', team: 'growth', agent: 'crm-sales', action: 'get-pipeline', outputKey: 'crmKpis' },
+      { id: 'rk-pilots', name: 'Pilot KPIs', team: 'compliance', agent: 'pilot-operations', action: 'get-available-pilots', outputKey: 'pilotKpis' },
+      { id: 'rk-data', name: 'Data KPIs', team: 'delivery', agent: 'data-processing', action: 'get-processing-stats', outputKey: 'dataKpis' },
+      { id: 'rk-jobs', name: 'Job KPIs', team: 'delivery', agent: 'job-lifecycle', action: 'get-pipeline-summary', outputKey: 'jobKpis' },
+    ],
+  },
+  {
+    id: 'routine-friday-report',
+    name: 'Weekly Report Distribution',
+    day: 'friday',
+    time: '17:00',
+    teams: ['delivery', 'compliance', 'revenue', 'growth', 'intelligence', 'ecosystem'],
+    description: 'Push weekly report to all 8 platforms: Notion, Asana, Airtable, Supabase, Gamma, Canva, GDrive, Email',
+    tasks: [
+      { id: 'rp-notion', name: 'Push to Notion', team: 'delivery', agent: 'data-processing', action: 'push-report', outputKey: 'notionPush' },
+      { id: 'rp-asana', name: 'Push to Asana', team: 'delivery', agent: 'data-processing', action: 'push-report', outputKey: 'asanaPush' },
+      { id: 'rp-airtable', name: 'Push to Airtable', team: 'revenue', agent: 'finance-invoicing', action: 'push-report', outputKey: 'airtablePush' },
+      { id: 'rp-supabase', name: 'Push to Supabase', team: 'delivery', agent: 'data-processing', action: 'push-report', outputKey: 'supabasePush' },
+      { id: 'rp-gamma', name: 'Push to Gamma', team: 'ecosystem', agent: 'data-processing', action: 'push-report', outputKey: 'gammaPush' },
+      { id: 'rp-canva', name: 'Push to Canva', team: 'ecosystem', agent: 'data-processing', action: 'push-report', outputKey: 'canvaPush' },
+      { id: 'rp-gdrive', name: 'Push to Google Drive', team: 'delivery', agent: 'data-processing', action: 'push-report', outputKey: 'gdrivePush' },
+      { id: 'rp-email', name: 'Send email report', team: 'revenue', agent: 'finance-invoicing', action: 'push-report', outputKey: 'emailPush' },
+    ],
+  },
+];
+
+// ── Routine Helpers ─────────────────────────────────────────────
+
+export function getRoutinesByDay(day: RoutineDay): WeeklyRoutine[] {
+  return WEEKLY_ROUTINES.filter(r => r.day === day);
+}
+
+export function getRoutineById(id: string): WeeklyRoutine | undefined {
+  return WEEKLY_ROUTINES.find(r => r.id === id);
+}
+
+export function getAllRoutineTasks(): RoutineTask[] {
+  return WEEKLY_ROUTINES.flatMap(r => r.tasks);
+}
+
+export function printWeeklySchedule(): string {
+  const lines: string[] = [];
+  lines.push('╔════════════════════════════════════════════════════════════════════╗');
+  lines.push('║           KTV COWORK — Weekly Routine Schedule                    ║');
+  lines.push(`║           ${WEEKLY_ROUTINES.length} Routines | ${getAllRoutineTasks().length} Tasks | Mon–Fri               ║`);
+  lines.push('╠════════════════════════════════════════════════════════════════════╣');
+
+  const days: RoutineDay[] = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday'];
+  for (const day of days) {
+    const routines = getRoutinesByDay(day);
+    lines.push(`║                                                                    ║`);
+    lines.push(`║  ┌─ ${day.toUpperCase().padEnd(62)}┐  ║`);
+    for (const routine of routines) {
+      lines.push(`║  │  ${routine.time} ${routine.name.padEnd(52)}│  ║`);
+      lines.push(`║  │    Teams: ${routine.teams.join(', ').slice(0, 51).padEnd(51)}│  ║`);
+      for (const task of routine.tasks) {
+        lines.push(`║  │    → ${task.name.slice(0, 56).padEnd(56)}│  ║`);
+      }
+      lines.push(`║  │                                                              │  ║`);
+    }
+    lines.push(`║  └──────────────────────────────────────────────────────────────┘  ║`);
+  }
+
+  lines.push('╠════════════════════════════════════════════════════════════════════╣');
+  lines.push('║  + Daily Ops Briefing runs every day at 08:00 (all teams)         ║');
+  lines.push('║  + 6 automated triggers run 24/7 (5–30 min intervals)             ║');
+  lines.push('║  + 10 event-driven workflows fire on business events              ║');
+  lines.push('╚════════════════════════════════════════════════════════════════════╝');
+
+  return lines.join('\n');
+}
+
+// ── Weekly Report Tracker ───────────────────────────────────────
+
+export class WeeklyReportTracker {
+  private entries: WeeklyReportEntry[] = [];
+
+  recordCompletion(routineId: string, day: RoutineDay, tasksCompleted: number, tasksFailed: number, results: Record<string, unknown>): void {
+    this.entries.push({
+      routineId,
+      day,
+      completedAt: new Date(),
+      tasksCompleted,
+      tasksFailed,
+      results,
+    });
+  }
+
+  getWeekEntries(weekStart: Date): WeeklyReportEntry[] {
+    const weekEnd = new Date(weekStart.getTime() + 7 * 86_400_000);
+    return this.entries.filter(e => e.completedAt >= weekStart && e.completedAt < weekEnd);
+  }
+
+  generateWeeklySummary(weekStart: Date): {
+    totalRoutines: number;
+    totalTasksCompleted: number;
+    totalTasksFailed: number;
+    byDay: Record<RoutineDay, { routines: number; tasks: number; failures: number }>;
+    completionRate: number;
+  } {
+    const entries = this.getWeekEntries(weekStart);
+    const byDay: Record<RoutineDay, { routines: number; tasks: number; failures: number }> = {
+      monday: { routines: 0, tasks: 0, failures: 0 },
+      tuesday: { routines: 0, tasks: 0, failures: 0 },
+      wednesday: { routines: 0, tasks: 0, failures: 0 },
+      thursday: { routines: 0, tasks: 0, failures: 0 },
+      friday: { routines: 0, tasks: 0, failures: 0 },
+    };
+
+    let totalCompleted = 0;
+    let totalFailed = 0;
+    for (const entry of entries) {
+      byDay[entry.day].routines++;
+      byDay[entry.day].tasks += entry.tasksCompleted;
+      byDay[entry.day].failures += entry.tasksFailed;
+      totalCompleted += entry.tasksCompleted;
+      totalFailed += entry.tasksFailed;
+    }
+
+    const totalTasks = totalCompleted + totalFailed;
+    return {
+      totalRoutines: entries.length,
+      totalTasksCompleted: totalCompleted,
+      totalTasksFailed: totalFailed,
+      byDay,
+      completionRate: totalTasks > 0 ? (totalCompleted / totalTasks) * 100 : 100,
+    };
+  }
+
+  printWeeklyReport(weekStart: Date): string {
+    const summary = this.generateWeeklySummary(weekStart);
+    const weekEnd = new Date(weekStart.getTime() + 4 * 86_400_000);
+    const fmt = (d: Date) => d.toISOString().split('T')[0];
+
+    const lines: string[] = [];
+    lines.push('╔════════════════════════════════════════════════════════════════════╗');
+    lines.push('║           KTV COWORK — Weekly Task Completion Report              ║');
+    lines.push(`║           Week of ${fmt(weekStart)} to ${fmt(weekEnd)}                   ║`);
+    lines.push('╠════════════════════════════════════════════════════════════════════╣');
+    lines.push(`║  Routines Completed: ${String(summary.totalRoutines).padEnd(5)} / ${WEEKLY_ROUTINES.length}                             ║`);
+    lines.push(`║  Tasks Completed:    ${String(summary.totalTasksCompleted).padEnd(5)} / ${getAllRoutineTasks().length}                            ║`);
+    lines.push(`║  Tasks Failed:       ${String(summary.totalTasksFailed).padEnd(47)}║`);
+    lines.push(`║  Completion Rate:    ${summary.completionRate.toFixed(1)}%${' '.repeat(44 - summary.completionRate.toFixed(1).length)}║`);
+    lines.push('╠════════════════════════════════════════════════════════════════════╣');
+
+    const days: RoutineDay[] = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday'];
+    for (const day of days) {
+      const d = summary.byDay[day];
+      const status = d.failures > 0 ? 'ISSUES' : d.routines > 0 ? 'DONE' : 'PENDING';
+      lines.push(`║  ${day.charAt(0).toUpperCase() + day.slice(1).padEnd(11)} ${String(d.routines).padEnd(3)} routines  ${String(d.tasks).padEnd(3)} tasks  ${String(d.failures).padEnd(3)} failed  [${status}]  ║`);
+    }
+
+    lines.push('╚════════════════════════════════════════════════════════════════════╝');
+    return lines.join('\n');
+  }
+}
+
 export const COWORK_WORKFLOWS: WorkflowDefinition[] = [
   COWORK_WORKFLOW_DAILY_BRIEFING,
 ];

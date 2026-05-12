@@ -16,8 +16,15 @@ export type { BrainDecision } from './brain.js';
 
 export { ALL_WORKFLOWS } from './definitions.js';
 
-export { CoworkOrchestrator, COWORK_TEAMS, COWORK_COMMANDS, COWORK_WORKFLOWS } from './cowork.js';
-export type { CoworkTeam, CoworkTeamId, CoworkCommand, CoworkStep, CoworkSession, StrategyAgent } from './cowork.js';
+export {
+  CoworkOrchestrator, COWORK_TEAMS, COWORK_COMMANDS, COWORK_WORKFLOWS,
+  WEEKLY_ROUTINES, WeeklyReportTracker,
+  getRoutinesByDay, getRoutineById, getAllRoutineTasks, printWeeklySchedule,
+} from './cowork.js';
+export type {
+  CoworkTeam, CoworkTeamId, CoworkCommand, CoworkStep, CoworkSession, StrategyAgent,
+  WeeklyRoutine, RoutineTask, RoutineDay, WeeklyReportEntry,
+} from './cowork.js';
 
 export {
   KTV_TEAM, TIMEZONE, PRIMARY_CALENDAR,

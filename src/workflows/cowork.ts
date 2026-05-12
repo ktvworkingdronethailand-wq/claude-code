@@ -706,7 +706,7 @@ export const COWORK_WORKFLOW_DAILY_BRIEFING: WorkflowDefinition = {
 // ── Weekly Routine Definitions ──────────────────────────────────
 // Scheduled routines that run on specific days of the week
 
-export type RoutineDay = 'monday' | 'tuesday' | 'wednesday' | 'thursday' | 'friday';
+export type RoutineDay = 'monday' | 'tuesday' | 'wednesday' | 'thursday' | 'friday' | 'saturday' | 'sunday';
 
 export interface WeeklyRoutine {
   id: string;
@@ -892,6 +892,128 @@ export const WEEKLY_ROUTINES: WeeklyRoutine[] = [
       { id: 'rp-email', name: 'Send email report', team: 'revenue', agent: 'finance-invoicing', action: 'push-report', outputKey: 'emailPush' },
     ],
   },
+
+  // ── Shell IoT Station Tasks (Wednesday + Friday) ────────────
+  {
+    id: 'routine-wednesday-shell-iot',
+    name: 'Shell IoT Station Health',
+    day: 'wednesday',
+    time: '11:00',
+    teams: ['delivery', 'ecosystem'],
+    description: 'Check sensor hub health across 400 Shell stations, verify data provenance, flag offline sensors',
+    tasks: [
+      { id: 'rs-sensor-health', name: 'Sensor hub health check (400 stations)', team: 'delivery', agent: 'fleet-management', action: 'get-fleet-summary', outputKey: 'sensorHealth' },
+      { id: 'rs-provenance', name: 'Data provenance chain verification (HMAC-SHA256)', team: 'delivery', agent: 'data-processing', action: 'get-processing-stats', outputKey: 'provenanceCheck' },
+      { id: 'rs-offline', name: 'Flag offline/degraded sensors for field visit', team: 'delivery', agent: 'fleet-management', action: 'get-maintenance-alerts', outputKey: 'offlineSensors' },
+      { id: 'rs-edge', name: 'Raspberry Pi edge gateway uptime check', team: 'delivery', agent: 'data-processing', action: 'get-processing-stats', outputKey: 'edgeUptime' },
+    ],
+  },
+  {
+    id: 'routine-friday-shell-revenue',
+    name: 'Shell IoT Revenue & Tier Report',
+    day: 'friday',
+    time: '11:00',
+    teams: ['revenue', 'ecosystem'],
+    description: 'Track Shell data subscription revenue by tier, station coverage, and upsell opportunities',
+    tasks: [
+      { id: 'rv-base', name: 'Base tier station count (proof-of-service)', team: 'revenue', agent: 'finance-invoicing', action: 'get-financial-summary', outputKey: 'shellBase' },
+      { id: 'rv-standard', name: 'Standard tier revenue ($20/station/mo)', team: 'revenue', agent: 'finance-invoicing', action: 'get-financial-summary', outputKey: 'shellStandard' },
+      { id: 'rv-premium', name: 'Premium tier revenue ($75/station/mo)', team: 'revenue', agent: 'finance-invoicing', action: 'get-financial-summary', outputKey: 'shellPremium' },
+      { id: 'rv-upsell', name: 'Identify Base→Standard upsell candidates', team: 'ecosystem', agent: 'sales_playbook_account_selector', action: 'prioritise-accounts', outputKey: 'shellUpsell' },
+      { id: 'rv-value', name: '7 value layer utilization per station', team: 'ecosystem', agent: 'smart_green_product_orchestrator', action: 'assess-site', outputKey: 'valueLayers' },
+    ],
+  },
+
+  // ── Smart Green ESG Routines (Tuesday + Thursday) ───────────
+  {
+    id: 'routine-tuesday-esg',
+    name: 'Smart Green ESG Tracking',
+    day: 'tuesday',
+    time: '11:00',
+    teams: ['ecosystem', 'compliance'],
+    description: 'Track GRESB indicators, carbon credits, T-VER submissions, and ESG compliance matrix',
+    tasks: [
+      { id: 're-gresb', name: 'GRESB indicator data collection (PE1-PE5)', team: 'ecosystem', agent: 'smart_green_product_orchestrator', action: 'assess-site', outputKey: 'gresbData' },
+      { id: 're-ghg', name: 'GHG reduction tracking (96% target vs actual)', team: 'ecosystem', agent: 'smart_green_product_orchestrator', action: 'establish-baseline', outputKey: 'ghgTracking' },
+      { id: 're-tver', name: 'T-VER carbon credit accumulation status', team: 'compliance', agent: 'operations_compliance_mission_planner', action: 'check-caat', outputKey: 'tverStatus' },
+      { id: 're-matrix', name: 'ESG compliance matrix update (6 frameworks)', team: 'compliance', agent: 'safety-compliance', action: 'get-safety-stats', outputKey: 'esgMatrix' },
+    ],
+  },
+  {
+    id: 'routine-thursday-esg-report',
+    name: 'ESG Report Preparation',
+    day: 'thursday',
+    time: '11:00',
+    teams: ['ecosystem', 'revenue'],
+    description: 'Prepare ESG certificates, client sustainability reports, and carbon credit revenue',
+    tasks: [
+      { id: 'rer-certs', name: 'Generate per-mission ESG certificates', team: 'ecosystem', agent: 'data-processing', action: 'get-processing-stats', outputKey: 'esgCerts' },
+      { id: 'rer-client', name: 'Compile client sustainability reports', team: 'ecosystem', agent: 'smart_green_product_orchestrator', action: 'configure-telemetry', outputKey: 'clientEsg' },
+      { id: 'rer-carbon', name: 'Carbon credit revenue calculation', team: 'revenue', agent: 'financial_model_capital_planner', action: 'analyze-carbon', outputKey: 'carbonRevenue' },
+      { id: 'rer-disclosure', name: 'Quarterly disclosure artifact check (SET/TGO)', team: 'compliance', agent: 'operations_compliance_mission_planner', action: 'check-caat', outputKey: 'disclosureCheck' },
+    ],
+  },
+
+  // ── Client Onboarding Routines (Monday + Wednesday) ─────────
+  {
+    id: 'routine-monday-onboarding',
+    name: 'Client Onboarding Pipeline',
+    day: 'monday',
+    time: '11:00',
+    teams: ['growth', 'delivery'],
+    description: 'Review new client welcome sequences, pending site assessments, and contract pipeline',
+    tasks: [
+      { id: 'ro-welcome', name: 'Review pending welcome sequences', team: 'growth', agent: 'crm-sales', action: 'get-pipeline', outputKey: 'welcomePipeline' },
+      { id: 'ro-sites', name: 'Schedule outstanding site assessments', team: 'delivery', agent: 'job-lifecycle', action: 'get-pipeline-summary', outputKey: 'siteAssessments' },
+      { id: 'ro-contracts', name: 'Track proposal→contract conversion', team: 'growth', agent: 'crm-sales', action: 'get-pipeline', outputKey: 'contractPipeline' },
+      { id: 'ro-channel', name: 'Channel routing review (IFS vs Direct)', team: 'growth', agent: 'partner_strategy_architect', action: 'route-opportunity', outputKey: 'channelReview' },
+    ],
+  },
+  {
+    id: 'routine-wednesday-recurring',
+    name: 'Recurring Service Scheduling',
+    day: 'wednesday',
+    time: '14:00',
+    teams: ['delivery', 'revenue'],
+    description: 'Review recurring service contracts, generate next-month slots, track client retention',
+    tasks: [
+      { id: 'rr-active', name: 'Review active recurring contracts', team: 'delivery', agent: 'job-lifecycle', action: 'get-pipeline-summary', outputKey: 'recurringActive' },
+      { id: 'rr-slots', name: 'Generate next-month schedule slots', team: 'delivery', agent: 'fleet-management', action: 'get-available-drones', outputKey: 'nextMonthSlots' },
+      { id: 'rr-retention', name: 'Client retention rate check', team: 'revenue', agent: 'crm-sales', action: 'get-pipeline', outputKey: 'retentionRate' },
+      { id: 'rr-renewal', name: 'Flag contracts approaching renewal', team: 'revenue', agent: 'finance-invoicing', action: 'get-financial-summary', outputKey: 'renewalPipeline' },
+    ],
+  },
+
+  // ── Weekend Monitoring (Saturday + Sunday) ──────────────────
+  {
+    id: 'routine-saturday-monitoring',
+    name: 'Weekend Fleet & Sensor Monitoring',
+    day: 'saturday',
+    time: '08:00',
+    teams: ['delivery', 'compliance'],
+    description: 'Autonomous fleet health, Shell IoT sensor sync, emergency readiness check',
+    tasks: [
+      { id: 'rw-fleet', name: 'Fleet health snapshot (all 16 drones)', team: 'delivery', agent: 'fleet-management', action: 'get-fleet-summary', outputKey: 'weekendFleet' },
+      { id: 'rw-sensor', name: 'Shell sensor data sync verification', team: 'delivery', agent: 'data-processing', action: 'get-processing-stats', outputKey: 'sensorSync' },
+      { id: 'rw-s3', name: 'S3 Object Lock storage health (7yr GOVERNANCE)', team: 'delivery', agent: 'data-processing', action: 'get-processing-stats', outputKey: 's3Health' },
+      { id: 'rw-emergency', name: 'Emergency response readiness check', team: 'compliance', agent: 'safety-compliance', action: 'get-safety-stats', outputKey: 'emergencyReady' },
+      { id: 'rw-battery', name: 'Battery charging station status', team: 'delivery', agent: 'fleet-management', action: 'get-maintenance-alerts', outputKey: 'batteryStatus' },
+    ],
+  },
+  {
+    id: 'routine-sunday-sync',
+    name: 'Pre-Week Data Sync & Prep',
+    day: 'sunday',
+    time: '18:00',
+    teams: ['delivery', 'intelligence'],
+    description: 'Sync all IoT data to cloud, prepare Monday dashboards, pre-load market intelligence',
+    tasks: [
+      { id: 'rx-upload', name: 'Verify all IoT uploads to S3 (weekly batch)', team: 'delivery', agent: 'data-processing', action: 'get-processing-stats', outputKey: 'weeklyUpload' },
+      { id: 'rx-dashboard', name: 'Pre-populate Monday dashboard data', team: 'delivery', agent: 'data-processing', action: 'get-processing-stats', outputKey: 'dashboardPrep' },
+      { id: 'rx-market', name: 'Pre-load market intelligence for Monday scan', team: 'intelligence', agent: 'market_intelligence_strategist', action: 'scan-opportunities', outputKey: 'marketPreload' },
+      { id: 'rx-schedule', name: 'Generate Monday mission schedule', team: 'delivery', agent: 'fleet-management', action: 'get-available-drones', outputKey: 'mondaySchedule' },
+    ],
+  },
 ];
 
 // ── Routine Helpers ─────────────────────────────────────────────
@@ -915,7 +1037,7 @@ export function printWeeklySchedule(): string {
   lines.push(`║           ${WEEKLY_ROUTINES.length} Routines | ${getAllRoutineTasks().length} Tasks | Mon–Fri               ║`);
   lines.push('╠════════════════════════════════════════════════════════════════════╣');
 
-  const days: RoutineDay[] = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday'];
+  const days: RoutineDay[] = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday'];
   for (const day of days) {
     const routines = getRoutinesByDay(day);
     lines.push(`║                                                                    ║`);
@@ -932,9 +1054,10 @@ export function printWeeklySchedule(): string {
   }
 
   lines.push('╠════════════════════════════════════════════════════════════════════╣');
-  lines.push('║  + Daily Ops Briefing runs every day at 08:00 (all teams)         ║');
+  lines.push('║  + Daily Ops Briefing runs every weekday at 08:00 (all teams)     ║');
   lines.push('║  + 6 automated triggers run 24/7 (5–30 min intervals)             ║');
   lines.push('║  + 10 event-driven workflows fire on business events              ║');
+  lines.push('║  + Weekend: autonomous monitoring + pre-week data sync             ║');
   lines.push('╚════════════════════════════════════════════════════════════════════╝');
 
   return lines.join('\n');
@@ -975,6 +1098,8 @@ export class WeeklyReportTracker {
       wednesday: { routines: 0, tasks: 0, failures: 0 },
       thursday: { routines: 0, tasks: 0, failures: 0 },
       friday: { routines: 0, tasks: 0, failures: 0 },
+      saturday: { routines: 0, tasks: 0, failures: 0 },
+      sunday: { routines: 0, tasks: 0, failures: 0 },
     };
 
     let totalCompleted = 0;
@@ -1013,7 +1138,7 @@ export class WeeklyReportTracker {
     lines.push(`║  Completion Rate:    ${summary.completionRate.toFixed(1)}%${' '.repeat(44 - summary.completionRate.toFixed(1).length)}║`);
     lines.push('╠════════════════════════════════════════════════════════════════════╣');
 
-    const days: RoutineDay[] = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday'];
+    const days: RoutineDay[] = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday'];
     for (const day of days) {
       const d = summary.byDay[day];
       const status = d.failures > 0 ? 'ISSUES' : d.routines > 0 ? 'DONE' : 'PENDING';

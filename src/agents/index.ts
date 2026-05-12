@@ -11,3 +11,5 @@ export { FinanceInvoicingAgent } from './finance-invoicing.js';
 export { PilotOperationsAgent } from './pilot-operations.js';
 export { DataProcessingAgent } from './data-processing.js';
 export { KtvOrchestrator } from './orchestrator.js';
+export { AgentSupervisor } from './supervisor.js';
+export type { AgentProductivity, SupervisorReport, TeamProductivity, RoutineCompletionSummary } from './supervisor.js';

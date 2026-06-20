@@ -34,3 +34,9 @@ export {
   getEmailTemplate, getCalendarTemplate,
 } from './connected-apps.js';
 export type { TeamContact, EmailTemplate, CalendarEventTemplate, ConnectedAutomation } from './connected-apps.js';
+
+export {
+  ROUTINE_PROMPTS,
+  getRoutinePrompt, getRoutinePromptsByDay, getTaskPrompt,
+} from './routine-prompts.js';
+export type { RoutinePrompt } from './routine-prompts.js';

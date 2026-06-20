@@ -1,6 +1,6 @@
 # KTV Working Drone Thailand — AGENTS
 
-**14 AI agents | 6 CoWork teams | 18 weekly routines | 78 tasks | 5 commands**
+**14 Core Agents | 13 Company Agents | 39 Sub-Agents | 6 Teams | 20 Routines | 105 Tasks | 5 Commands**
 **Upload to**: `/cowork` orchestrator for full automation
 
 ---
@@ -36,6 +36,60 @@
 | Agent | Class | Purpose |
 |-------|-------|---------|
 | Supervisor | `AgentSupervisor` | Monitors all 14 agents, tracks productivity, generates reports, flags underperformers |
+
+### Company Strategy Agents (13 Companies, 39 Sub-Agents)
+
+Each target company has a dedicated agent with 3 sub-agents (Marketing, Sales, Docs). All strategies auto-sync to Google Drive weekly.
+
+#### Real Estate & FM
+
+| ID | Company | Annual Target | Lead Agent | Sub-Agents | GDrive Folder |
+|----|---------|---------------|------------|------------|---------------|
+| CA-JLL | JLL Thailand | THB 15-25M | S1 Market Intelligence | Marketing, Sales, Docs | `JLL Thailand/` |
+| CA-KF | Knight Frank Thailand | THB 10-18M | S6 Sales Playbook | Marketing, Sales, Docs | `Knight Frank Thailand/` |
+| CA-CBRE | CBRE Thailand | THB 20-35M | S1 Market Intelligence | Marketing, Sales, Docs | `CBRE Thailand/` |
+| CA-OB | One Bangkok | THB 23.97M ACV | S5 Deal Design | Marketing, Sales, Docs | `One Bangkok/` |
+| CA-FP | Frasers Property Thailand | THB 10-20M | S3 Smart Green | Marketing, Sales, Docs | `Frasers Property Thailand/` |
+| CA-CPN | Central Pattana (CPN) | THB 15-30M | S6 Sales Playbook | Marketing, Sales, Docs | `Central Pattana CPN/` |
+
+#### Petrol & Energy
+
+| ID | Company | Annual Target | Lead Agent | Sub-Agents | GDrive Folder |
+|----|---------|---------------|------------|------------|---------------|
+| CA-SHELL | Shell Thailand | THB 12M + $360K data | S2 Partner Strategy | Marketing, Sales, Docs | `Shell Thailand/` |
+| CA-PTT | PTT / OR | THB 30-50M + $550K | S2 Partner Strategy | Marketing, Sales, Docs | `PTT OR Thailand/` |
+| CA-BGK | Bangchak Corporation | THB 15-25M | S3 Smart Green | Marketing, Sales, Docs | `Bangchak Corporation/` |
+
+#### Banking & Green Finance
+
+| ID | Company | Annual Target | Lead Agent | Sub-Agents | GDrive Folder |
+|----|---------|---------------|------------|------------|---------------|
+| CA-KBANK | Kasikornbank (KBANK) | THB 5-10M | S4 Financial Model | Marketing, Sales, Docs | `KBANK Green Finance/` |
+| CA-SCB | SCB / SCB X | THB 3-8M | S4 Financial Model | Marketing, Sales, Docs | `SCB Green Finance/` |
+| CA-BBL | Bangkok Bank (BBL) | THB 3-6M | S4 Financial Model | Marketing, Sales, Docs | `BBL Green Finance/` |
+
+#### Industrial
+
+| ID | Company | Annual Target | Lead Agent | Sub-Agents | GDrive Folder |
+|----|---------|---------------|------------|------------|---------------|
+| CA-WHA | WHA Group / WHART REIT | THB 8-15M | S7 Ops Compliance | Marketing, Sales, Docs | `WHA Group/` |
+
+#### Sub-Agent Roles
+
+| Role | Focus | Weekly Action | GDrive Output |
+|------|-------|---------------|---------------|
+| **Marketing** | Company intel, ESG reports, positioning, co-branded materials | `scan-company-intel` | `{Company}-Marketing-Strategy.md` |
+| **Sales** | Pipeline tracking, proposals, contacts, pricing | `update-pipeline` | `{Company}-Sales-Pipeline.md` |
+| **Docs** | Strategy master doc, meeting notes, proposal tracker | `sync-gdrive` | `{Company}-Strategy-Master.md` |
+
+#### Company Agent Skills
+
+| Skill | Action | Output |
+|-------|--------|--------|
+| Scan company intel | `scan-company-intel` | Company news, ESG reports, FM procurement opportunities |
+| Update pipeline | `update-pipeline` | Sales pipeline status, contacts, next actions |
+| Sync GDrive | `sync-gdrive` | Push strategy docs to company Google Drive folder |
+| Sync all docs | `sync-all-company-docs` | Bulk sync all 13 company strategy folders |
 
 ---
 
@@ -259,7 +313,7 @@
 
 ---
 
-## Weekly Routine Schedule (18 Routines, 78 Tasks)
+## Weekly Routine Schedule (20 Routines, 105 Tasks)
 
 ### Monday
 
@@ -275,6 +329,7 @@
 | Time | Routine | Teams | Tasks |
 |------|---------|-------|-------|
 | 09:00 | Partner Pipeline Review | Ecosystem | Partnership proposals, equity tracking, Smart Green adoption, new targets |
+| **09:30** | **Company Agent Marketing Scans** | **Growth, Ecosystem, Intelligence** | **All 13 company marketing agents scan targets → GDrive sync (13 tasks)** |
 | 11:00 | Smart Green ESG Tracking | Ecosystem, Compliance | GRESB indicators, GHG reduction, T-VER credits, ESG compliance matrix |
 | 14:00 | Sales Pipeline Grooming | Growth, Revenue | Score accounts, flag stalled leads, generate proposals, update playbooks |
 
@@ -300,6 +355,7 @@
 | Time | Routine | Teams | Tasks |
 |------|---------|-------|-------|
 | 09:00 | Weekly KPI Aggregation | All 6 teams | All 7 ops agents report KPIs |
+| **10:00** | **Company Agent Sales + Docs Sync** | **Growth, Ecosystem, Revenue, Intelligence** | **All 13 company sales pipelines + strategy docs → GDrive sync (14 tasks)** |
 | 11:00 | Shell IoT Revenue & Tier Report | Revenue, Ecosystem | Base/Standard/Premium tier revenue, upsell candidates, value layers |
 | 17:00 | Weekly Report Distribution | All 6 teams | Push to 8 platforms: Notion, Asana, Airtable, Supabase, Gamma, Canva, GDrive, Email |
 
@@ -435,6 +491,99 @@ The `AgentSupervisor` rates each agent automatically:
 
 ---
 
+## How All Workflows Are Delivered
+
+Every workflow in the system is delivered through a layered execution pipeline. Here is the end-to-end path from trigger to output:
+
+### Execution Pipeline
+
+```
+1. TRIGGER (event or schedule)
+   ├── Automated Triggers (6) — run 24/7 at 5-30 min intervals
+   ├── Weekly Routines (20) — scheduled Mon-Sun per WEEKLY_ROUTINES array
+   ├── Business Events (46 types) — emitted by agents via EventBus
+   └── CoWork Commands (5) — invoked manually via /cowork
+
+2. EVENT BUS (src/workflows/event-bus.ts)
+   └── Routes events to registered workflow handlers
+
+3. WORKFLOW ENGINE (src/workflows/engine.ts)
+   ├── Resolves workflow steps in sequence or parallel
+   ├── Each step dispatches to a specific agent + action
+   ├── Passes output from step N as input to step N+1
+   └── Retries failed steps (configurable)
+
+4. OPERATIONS BRAIN (src/workflows/brain.ts)
+   ├── Central decision engine — evaluates workflow outputs
+   ├── Applies business rules (CAAT, financial guardrails, safety)
+   └── Logs decisions to Supabase brain_decisions table
+
+5. AGENT EXECUTION (src/agents/*.ts)
+   ├── Operations agents (O1-O7) execute physical/data operations
+   ├── Strategy agents (S1-S7) analyze, plan, and recommend
+   ├── Company agents (13) run marketing scans, sales updates, doc syncs
+   └── Each agent returns typed results via AgentMessage
+
+6. CONNECTED APPS (src/workflows/connected-apps.ts)
+   ├── Gmail — 7 email templates auto-sent on workflow events
+   └── Calendar — 6 event templates auto-created on scheduling events
+
+7. OUTPUT & DISTRIBUTION
+   ├── Google Drive — 39 company strategy files synced weekly (Tue + Fri)
+   ├── Supabase — real-time dashboard updates (agent_status, kpi_snapshots)
+   ├── 8-Platform Friday Report — Notion, Asana, Airtable, Supabase, Gamma, Canva, GDrive, Email
+   └── AgentSupervisor — productivity ratings logged per agent/team
+```
+
+### Workflow Delivery by Category
+
+| Category | Count | How Delivered | Frequency |
+|----------|-------|---------------|-----------|
+| Core Workflows | 10 | EventBus → WorkflowEngine → agents → brain decisions | On business events (real-time) |
+| Connected App Workflows | 5 | EventBus → Gmail/Calendar templates → auto-send | On business events (real-time) |
+| Automated Triggers | 6 | TriggerManager → poll agents → emit events if thresholds hit | Every 5-30 min (24/7) |
+| Weekly Routines (Core) | 18 | CoWork scheduler → agent tasks → output keys → report tracker | Mon-Sun per schedule |
+| Weekly Routines (Company) | 2 | CoWork scheduler → 13 company agents → GDrive sync | Tue 09:30 + Fri 10:00 |
+| CoWork Commands | 5 | Manual `/cowork` → CoworkOrchestrator → multi-team sequence | On demand |
+| Daily Ops Briefing | 1 | CoWork workflow → 7 agents parallel → summary | Weekdays 08:00 |
+| Friday Report Distribution | 1 | AutomatedReportingOrchestrator → 8 platforms in parallel | Fridays 17:00 |
+| Company Strategy Sync | 1 | Company agents → GDriveClient → 13 folders, 39 files | Fridays 10:00 |
+| Supervisor Monitoring | 1 | AgentSupervisor → scan all 14 agents → ratings + alerts | Continuous |
+
+### Google Drive Delivery Flow (Company Strategies)
+
+```
+Tuesday 09:30 — Marketing Scan
+  13 company marketing sub-agents run scan-company-intel
+  → Each produces market intelligence report
+  → GDriveClient uploads {Company}-Marketing-Strategy.md to company folder
+  → Results stored in CoWork WeeklyReportTracker
+
+Friday 10:00 — Sales Pipeline + Docs Sync
+  13 company sales sub-agents run update-pipeline
+  → Each produces pipeline status update
+  → GDriveClient uploads {Company}-Sales-Pipeline.md
+  → 1 bulk task syncs all {Company}-Strategy-Master.md files
+  → Total: 39 files across 13 Google Drive folders updated weekly
+```
+
+### 8-Platform Report Flow (Friday 17:00)
+
+```
+WeeklyReportTracker.generateWeeklySummary()
+  → AutomatedReportingOrchestrator.distributeReport()
+    ├── Notion    → createPage(markdown)           — full ops report
+    ├── Asana     → createTask(markdown + JSON)     — team tasks
+    ├── Airtable  → upsertRecord(JSON)             — KPI snapshot
+    ├── Supabase  → upsert(JSON)                   — real-time dashboard
+    ├── Gamma     → generateFromOutline(markdown)   — management slides
+    ├── Canva     → pushContent(markdown)           — pitch deck update
+    ├── GDrive    → uploadTextFile(markdown)        — master report
+    └── Email     → sendTemplate(HTML)              — leadership summary
+```
+
+---
+
 ## Source Files
 
 | File | Purpose |
@@ -449,17 +598,20 @@ The `AgentSupervisor` rates each agent automatically:
 | `src/agents/data-processing.ts` | O7 Data Processing Agent |
 | `src/agents/orchestrator.ts` | `KtvOrchestrator` — routes messages, health checks |
 | `src/agents/supervisor.ts` | `AgentSupervisor` — productivity monitor |
-| `src/agents/index.ts` | All agent exports |
+| `src/agents/company-agents.ts` | 13 company agents, 39 sub-agents, GDrive sync |
+| `src/agents/index.ts` | All agent exports (core + company) |
 | `src/mastermind/main.py` | S1-S7 Strategy agent entry point |
 | `src/mastermind/orchestrator.py` | Mastermind parallel orchestration |
 | `src/mastermind/prompts.py` | Agent system prompts |
-| `src/workflows/cowork.ts` | 6 teams, 5 commands, 18 routines, 78 tasks |
+| `src/workflows/cowork.ts` | 6 teams, 5 commands, 20 routines, 105 tasks |
 | `src/workflows/connected-apps.ts` | 9 automations, 7 email + 6 calendar templates |
 | `src/workflows/definitions.ts` | 10 core workflow definitions |
 | `src/workflows/triggers.ts` | 6 automated triggers (5-30 min) |
 | `src/workflows/brain.ts` | OperationsBrain — decision engine |
 | `src/workflows/engine.ts` | WorkflowEngine — step execution |
 | `src/workflows/event-bus.ts` | EventBus — pub/sub events |
+| `src/integrations/gdrive.ts` | Google Drive client — company strategy sync |
+| `docs/COWORK.md` | Complete CoWork upload reference |
 
 ---
 

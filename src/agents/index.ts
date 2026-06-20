@@ -13,3 +13,20 @@ export { DataProcessingAgent } from './data-processing.js';
 export { KtvOrchestrator } from './orchestrator.js';
 export { AgentSupervisor } from './supervisor.js';
 export type { AgentProductivity, SupervisorReport, TeamProductivity, RoutineCompletionSummary } from './supervisor.js';
+export {
+  COMPANY_AGENTS,
+  getCompanyAgent,
+  getCompanyAgentsByCompany,
+  getCompanyAgentsBySector,
+  getAllCompanyWeeklyTasks,
+  getGDriveFolderStructure,
+  printCompanyAgentRoster,
+} from './company-agents.js';
+export type {
+  CompanySector,
+  SubAgentRole,
+  CompanyAgent,
+  SubAgentSpec,
+  CompanyWeeklyTask,
+  CompanyStrategy,
+} from './company-agents.js';

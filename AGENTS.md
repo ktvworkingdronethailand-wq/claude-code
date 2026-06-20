@@ -1,641 +1,326 @@
 # KTV Working Drone Thailand — AGENTS
 
-**14 Core Agents | 13 Company Agents | 39 Sub-Agents | 6 Teams | 20 Routines | 105 Tasks | 5 Commands**
-**Upload to**: `/cowork` orchestrator for full automation
+**14 Core Agents | 13 Company Agents (39 Sub-Agents) | 6 Teams | 20 Routines (107 Tasks) | 5 Commands**
+**Build**: tsc clean | **Tests**: 94/94 | **Target**: ES2022 / Node16
 
 ---
 
-## Agent Registry
+## 1. Agent Registry
 
-### Operations Layer (7 Agents)
+### Operations (O1–O7)
 
-| ID | Agent | Class | Role | Description |
-|----|-------|-------|------|-------------|
-| O1 | Fleet Manager | `FleetManagementAgent` | `fleet-management` | 16-drone fleet, batteries, payloads, maintenance schedules |
-| O2 | Job Manager | `JobLifecycleAgent` | `job-lifecycle` | 13-stage job lifecycle from lead-capture to completion |
-| O3 | CRM & Sales | `CrmSalesAgent` | `crm-sales` | Leads, clients, segments, NPS, pipeline tracking |
-| O4 | Safety & Compliance | `SafetyComplianceAgent` | `safety-compliance` | CAAT compliance, risk assessment, incident response |
-| O5 | Finance & Invoicing | `FinanceInvoicingAgent` | `finance-invoicing` | Invoicing, revenue tracking, collections, DSO |
-| O6 | Pilot Operations | `PilotOperationsAgent` | `pilot-operations` | Pilot scheduling, certifications, performance |
-| O7 | Data Processing | `DataProcessingAgent` | `data-processing` | Data pipeline, 4-copy backup, QA, client delivery |
+| ID | Agent | Role | Skills | Capability |
+|----|-------|------|:------:|------------|
+| O1 | Fleet Manager | `fleet-management` | 6 | 16-drone fleet, battery health, maintenance, assignment |
+| O2 | Job Manager | `job-lifecycle` | 4 | 13-stage lifecycle, pipeline tracking, cycle time |
+| O3 | CRM & Sales | `crm-sales` | 5 | Leads, clients, NPS, segments, pipeline |
+| O4 | Safety | `safety-compliance` | 4 | CAAT compliance, risk assessment, pre-flight, incidents |
+| O5 | Finance | `finance-invoicing` | 5 | Invoicing (7% VAT), collections, DSO, overdue |
+| O6 | Pilots | `pilot-operations` | 4 | 10 pilots, cert tracking, auto-ground, flight hours |
+| O7 | Data | `data-processing` | 5 | 4-copy backup, QA pipeline, ESG certificates |
 
-### Strategy Layer (7 Agents — Mastermind)
+### Strategy (S1–S7)
 
-| ID | Agent | Strategy Role | Description |
-|----|-------|--------------|-------------|
-| S1 | Market Intelligence | `market_intelligence_strategist` | TAM/SAM/SOM, competitive intelligence, opportunity mapping |
-| S2 | Partner Strategy | `partner_strategy_architect` | IFS channel routing, JV governance, equity milestones |
-| S3 | Smart Green Product | `smart_green_product_orchestrator` | ESG telemetry, GRESB readiness, BMS/CMMS integration |
-| S4 | Financial Model | `financial_model_capital_planner` | 3-year model, IRR/NPV/payback, guardrails, carbon credits |
-| S5 | Deal Design | `deal_design_pitch_engineer` | Investor decks, proposals, term sheets, pitch materials |
-| S6 | Sales Playbook | `sales_playbook_account_selector` | Account prioritization, sector playbooks, closing strategy |
-| S7 | Ops Compliance | `operations_compliance_mission_planner` | CAAT regulation, crew planning, mission SOPs, capacity |
+| ID | Agent | Role | Skills | Capability |
+|----|-------|------|:------:|------------|
+| S1 | Market Intelligence | `market_intelligence_strategist` | 4 | TAM/SAM/SOM, opportunity scanning, demand forecasting |
+| S2 | Partner Strategy | `partner_strategy_architect` | 4 | IFS channel routing, JV governance, equity milestones |
+| S3 | Smart Green | `smart_green_product_orchestrator` | 4 | GRESB, ESG telemetry, BMS/CMMS integration |
+| S4 | Financial Model | `financial_model_capital_planner` | 5 | IRR/NPV, carbon credits, guardrails, 3-year model |
+| S5 | Deal Design | `deal_design_pitch_engineer` | 3 | Pitch decks, proposals, one-pagers |
+| S6 | Sales Playbook | `sales_playbook_account_selector` | 3 | Account scoring, sector playbooks, pilot structuring |
+| S7 | Ops Compliance | `operations_compliance_mission_planner` | 4 | CAAT regulation, capacity planning, crew SOPs |
 
 ### Supervisor
 
-| Agent | Class | Purpose |
-|-------|-------|---------|
-| Supervisor | `AgentSupervisor` | Monitors all 14 agents, tracks productivity, generates reports, flags underperformers |
+| Agent | Capability |
+|-------|------------|
+| `AgentSupervisor` | Monitors all agents, tracks productivity per team, rates performance (excellent/good/needs-attention/critical), generates alerts |
 
-### Company Strategy Agents (13 Companies, 39 Sub-Agents)
+### Company Strategy Agents (13 Companies)
 
-Each target company has a dedicated agent with 3 sub-agents (Marketing, Sales, Docs). All strategies auto-sync to Google Drive weekly.
+Each company gets 3 sub-agents (**Marketing**, **Sales**, **Docs**) with weekly auto-sync to Google Drive.
 
-#### Real Estate & FM
+| ID | Company | Sector | Annual Target | Lead | GDrive |
+|----|---------|--------|---------------|------|--------|
+| `ca-jll` | JLL Thailand | Real Estate | THB 15–25M | S1 | `JLL Thailand/` |
+| `ca-knight-frank` | Knight Frank Thailand | Real Estate | THB 10–18M | S6 | `Knight Frank Thailand/` |
+| `ca-cbre` | CBRE Thailand | Real Estate | THB 20–35M | S1 | `CBRE Thailand/` |
+| `ca-one-bangkok` | One Bangkok | Real Estate | THB 23.97M | S5 | `One Bangkok/` |
+| `ca-frasers` | Frasers Property | Real Estate | THB 10–20M | S3 | `Frasers Property Thailand/` |
+| `ca-cpn` | Central Pattana (CPN) | Real Estate | THB 15–30M | S6 | `Central Pattana CPN/` |
+| `ca-shell` | Shell Thailand | Energy | THB 12M + $360K | S2 | `Shell Thailand/` |
+| `ca-ptt` | PTT / OR | Energy | THB 30–50M + $550K | S2 | `PTT OR Thailand/` |
+| `ca-bangchak` | Bangchak Corporation | Energy | THB 15–25M | S3 | `Bangchak Corporation/` |
+| `ca-kbank` | Kasikornbank | Green Finance | THB 5–10M | S4 | `KBANK Green Finance/` |
+| `ca-scb` | SCB / SCB X | Green Finance | THB 3–8M | S4 | `SCB Green Finance/` |
+| `ca-bbl` | Bangkok Bank | Green Finance | THB 3–6M | S4 | `BBL Green Finance/` |
+| `ca-wha` | WHA Group | Industrial | THB 8–15M | S7 | `WHA Group/` |
 
-| ID | Company | Annual Target | Lead Agent | Sub-Agents | GDrive Folder |
-|----|---------|---------------|------------|------------|---------------|
-| CA-JLL | JLL Thailand | THB 15-25M | S1 Market Intelligence | Marketing, Sales, Docs | `JLL Thailand/` |
-| CA-KF | Knight Frank Thailand | THB 10-18M | S6 Sales Playbook | Marketing, Sales, Docs | `Knight Frank Thailand/` |
-| CA-CBRE | CBRE Thailand | THB 20-35M | S1 Market Intelligence | Marketing, Sales, Docs | `CBRE Thailand/` |
-| CA-OB | One Bangkok | THB 23.97M ACV | S5 Deal Design | Marketing, Sales, Docs | `One Bangkok/` |
-| CA-FP | Frasers Property Thailand | THB 10-20M | S3 Smart Green | Marketing, Sales, Docs | `Frasers Property Thailand/` |
-| CA-CPN | Central Pattana (CPN) | THB 15-30M | S6 Sales Playbook | Marketing, Sales, Docs | `Central Pattana CPN/` |
+**Sub-agent outputs per company** (synced weekly to GDrive):
 
-#### Petrol & Energy
-
-| ID | Company | Annual Target | Lead Agent | Sub-Agents | GDrive Folder |
-|----|---------|---------------|------------|------------|---------------|
-| CA-SHELL | Shell Thailand | THB 12M + $360K data | S2 Partner Strategy | Marketing, Sales, Docs | `Shell Thailand/` |
-| CA-PTT | PTT / OR | THB 30-50M + $550K | S2 Partner Strategy | Marketing, Sales, Docs | `PTT OR Thailand/` |
-| CA-BGK | Bangchak Corporation | THB 15-25M | S3 Smart Green | Marketing, Sales, Docs | `Bangchak Corporation/` |
-
-#### Banking & Green Finance
-
-| ID | Company | Annual Target | Lead Agent | Sub-Agents | GDrive Folder |
-|----|---------|---------------|------------|------------|---------------|
-| CA-KBANK | Kasikornbank (KBANK) | THB 5-10M | S4 Financial Model | Marketing, Sales, Docs | `KBANK Green Finance/` |
-| CA-SCB | SCB / SCB X | THB 3-8M | S4 Financial Model | Marketing, Sales, Docs | `SCB Green Finance/` |
-| CA-BBL | Bangkok Bank (BBL) | THB 3-6M | S4 Financial Model | Marketing, Sales, Docs | `BBL Green Finance/` |
-
-#### Industrial
-
-| ID | Company | Annual Target | Lead Agent | Sub-Agents | GDrive Folder |
-|----|---------|---------------|------------|------------|---------------|
-| CA-WHA | WHA Group / WHART REIT | THB 8-15M | S7 Ops Compliance | Marketing, Sales, Docs | `WHA Group/` |
-
-#### Sub-Agent Roles
-
-| Role | Focus | Weekly Action | GDrive Output |
-|------|-------|---------------|---------------|
-| **Marketing** | Company intel, ESG reports, positioning, co-branded materials | `scan-company-intel` | `{Company}-Marketing-Strategy.md` |
-| **Sales** | Pipeline tracking, proposals, contacts, pricing | `update-pipeline` | `{Company}-Sales-Pipeline.md` |
-| **Docs** | Strategy master doc, meeting notes, proposal tracker | `sync-gdrive` | `{Company}-Strategy-Master.md` |
-
-#### Company Agent Skills
-
-| Skill | Action | Output |
-|-------|--------|--------|
-| Scan company intel | `scan-company-intel` | Company news, ESG reports, FM procurement opportunities |
-| Update pipeline | `update-pipeline` | Sales pipeline status, contacts, next actions |
-| Sync GDrive | `sync-gdrive` | Push strategy docs to company Google Drive folder |
-| Sync all docs | `sync-all-company-docs` | Bulk sync all 13 company strategy folders |
+| Sub-Agent | Action | GDrive File |
+|-----------|--------|-------------|
+| Marketing | `scan-company-intel` | `{Company}-Marketing-Strategy.md` |
+| Sales | `update-pipeline` | `{Company}-Sales-Pipeline.md` |
+| Docs | `sync-gdrive` | `{Company}-Strategy-Master.md` |
 
 ---
 
-## 6 CoWork Teams
+## 2. CoWork Teams
 
-### Team 1: Growth Engine (`growth`)
-
-**Mission**: Identify, qualify, and route market opportunities through IFS or Direct KTV channels
-
-| Role | Agents |
-|------|--------|
-| Strategy | S1 Market Intelligence, S2 Partner Strategy, S6 Sales Playbook |
-| Operations | O3 CRM & Sales, O2 Job Lifecycle |
-| Lead | S1 Market Intelligence |
-
-**KPIs**: New leads/week, Lead→qualified conversion, Pipeline value (THB), IFS vs Direct split
-
-**Workflows**: `wf-lead-to-client`
-
-### Team 2: Service Delivery (`delivery`)
-
-**Mission**: Execute drone missions from planning through data delivery with zero safety incidents
-
-| Role | Agents |
-|------|--------|
-| Strategy | S7 Ops Compliance, S3 Smart Green |
-| Operations | O1 Fleet, O2 Jobs, O6 Pilots, O4 Safety, O7 Data |
-| Lead | O1 Fleet Management |
-
-**KPIs**: Missions/week, Sqm processed, Safety incidents (0), On-time delivery, Backup compliance (100%)
-
-**Workflows**: `wf-mission-prep`, `wf-preflight-to-mission`, `wf-post-mission`
-
-### Team 3: Compliance & Safety (`compliance`)
-
-**Mission**: Maintain zero safety incidents, CAAT compliance, and fleet readiness at all times
-
-| Role | Agents |
-|------|--------|
-| Strategy | S7 Ops Compliance |
-| Operations | O4 Safety, O1 Fleet, O6 Pilots |
-| Lead | O4 Safety & Compliance |
-
-**KPIs**: Incidents (0), Pre-flight pass rate (>95%), Fleet availability, Cert currency, CAAT status
-
-**Workflows**: `wf-incident-response`, `wf-maintenance-auto`, `wf-cert-expiry`
-
-### Team 4: Market Intelligence (`intelligence`)
-
-**Mission**: Real-time market analysis, competitor tracking, and strategic recommendations
-
-| Role | Agents |
-|------|--------|
-| Strategy | S1 Market Intelligence, S2 Partner Strategy, S3 Smart Green |
-| Operations | O3 CRM, O7 Data |
-| Lead | S1 Market Intelligence |
-
-**KPIs**: TAM/SAM/SOM accuracy, Opportunity pipeline ranked, Competitive intel freshness, Smart Green adoption
-
-### Team 5: Ecosystem Builder (`ecosystem`)
-
-**Mission**: Build IFS partnership, Smart Green integrations, and new channel development
-
-| Role | Agents |
-|------|--------|
-| Strategy | S2 Partner Strategy, S5 Deal Design, S3 Smart Green, S6 Sales Playbook |
-| Operations | O3 CRM, O2 Jobs |
-| Lead | S2 Partner Strategy |
-
-**KPIs**: IFS equity progress (THB 32M→64M→160M), Smart Green sites, Partner satisfaction, Proposals delivered
-
-**Workflows**: `wf-lead-to-client`
-
-### Team 6: Revenue Operations (`revenue`)
-
-**Mission**: Maximise revenue, maintain healthy margins, and ensure timely collections
-
-| Role | Agents |
-|------|--------|
-| Strategy | S4 Financial Model, S5 Deal Design, S6 Sales Playbook |
-| Operations | O5 Finance, O3 CRM, O2 Jobs |
-| Lead | O5 Finance & Invoicing |
-
-**KPIs**: Revenue vs THB 180.18M target, EBITDA margin (>55%), Collection rate, DSO, IRR tracking
-
-**Workflows**: `wf-delivery-to-payment`, `wf-overdue-collection`
+| # | Team | ID | Lead | Strategy Agents | Ops Agents | Workflows |
+|---|------|----|------|-----------------|------------|-----------|
+| 1 | Growth Engine | `growth` | S1 | S1, S2, S6 | O3, O2 | `wf-lead-to-client` |
+| 2 | Service Delivery | `delivery` | O1 | S7, S3 | O1, O2, O4, O6, O7 | `wf-mission-prep`, `wf-preflight-to-mission`, `wf-post-mission` |
+| 3 | Compliance & Safety | `compliance` | O4 | S7 | O4, O1, O6 | `wf-incident-response`, `wf-maintenance-auto`, `wf-cert-expiry` |
+| 4 | Market Intelligence | `intelligence` | S1 | S1, S2, S3 | O3, O7 | — |
+| 5 | Ecosystem Builder | `ecosystem` | S2 | S2, S3, S5, S6 | O3, O2 | `wf-lead-to-client` |
+| 6 | Revenue Operations | `revenue` | O5 | S4, S5, S6 | O5, O3, O2 | `wf-delivery-to-payment`, `wf-overdue-collection` |
 
 ---
 
-## Agent Skills
+## 3. Weekly Schedule (20 Routines, 107 Tasks)
 
-### O1 Fleet Management
+All routines have structured prompts in `src/workflows/routine-prompts.ts`. Each task prompt tells the executing agent exactly what to produce — structured tables, action flags, KPI comparisons.
 
-| Skill | Action | Output |
-|-------|--------|--------|
-| Fleet summary | `get-fleet-summary` | Drone count, status, availability, utilization |
-| Available drones | `get-available-drones` | Drones ready for assignment |
-| Assign drone | `assign-drone` | Lock drone to mission |
-| Release drone | `release-drone` | Return drone to pool |
-| Maintenance alerts | `get-maintenance-alerts` | Upcoming maintenance, battery health |
-| Battery health | `get-battery-health` | Cycle counts, voltage, replacement schedule |
+### Monday (3 routines, 12 tasks)
 
-### O2 Job Lifecycle
+| Time | Routine | Teams | What Happens |
+|------|---------|-------|--------------|
+| 09:00 | Weekly Market Scan | Intelligence, Growth | Scan sectors, rank by revenue, route to IFS/Direct, check equity milestones |
+| 10:00 | Capacity Planning | Delivery, Compliance | Demand forecast, maintenance review, cert audit, crew assignment |
+| 11:00 | Client Onboarding | Growth, Delivery | Welcome sequences, site assessments, proposal→contract conversion |
 
-| Skill | Action | Output |
-|-------|--------|--------|
-| Create job | `create-job` | New job at lead-capture stage |
-| Advance stage | `advance-stage` | Move job through 13 stages |
-| Pipeline summary | `get-pipeline-summary` | Jobs by stage, bottlenecks, cycle time |
-| Job details | `get-job` | Full job record with history |
+### Tuesday (4 routines, 25 tasks)
 
-### O3 CRM & Sales
+| Time | Routine | Teams | What Happens |
+|------|---------|-------|--------------|
+| 09:00 | Partner Pipeline | Ecosystem | Review partnerships, update IFS equity, Smart Green adoption, new targets |
+| 09:30 | Company Marketing Scans | Growth, Ecosystem, Intelligence | 13 company agents scan targets → GDrive sync |
+| 11:00 | ESG Tracking | Ecosystem, Compliance | GRESB indicators (PE1–PE5), GHG reduction, T-VER credits, compliance matrix |
+| 14:00 | Sales Grooming | Growth, Revenue | Score accounts, flag stalled >72h, generate proposals, update playbooks |
 
-| Skill | Action | Output |
-|-------|--------|--------|
-| Create lead | `create-lead` | New lead with segment, source, value |
-| Advance lead | `advance-lead` | Move through: new→qualified→proposal→won/lost |
-| Get pipeline | `get-pipeline` | Leads by stage, stalled flags, conversion |
-| Record NPS | `record-nps` | Client satisfaction score + feedback |
-| Client lookup | `get-client` | Full client record |
+### Wednesday (4 routines, 15 tasks)
 
-### O4 Safety & Compliance
+| Time | Routine | Teams | What Happens |
+|------|---------|-------|--------------|
+| 08:00 | Safety Review | Compliance | WTD incidents, pre-flight analysis, pilot check, CAAT compliance gaps |
+| 10:00 | Fleet Optimization | Delivery | Utilization analysis, maintenance scheduling, mission efficiency |
+| 11:00 | Shell IoT Health | Delivery, Ecosystem | 400-station sensor check, HMAC-SHA256 provenance, offline flags, edge uptime |
+| 14:00 | Recurring Scheduling | Delivery, Revenue | Active contracts, next-month slots, retention rate, renewal pipeline |
 
-| Skill | Action | Output |
-|-------|--------|--------|
-| Safety stats | `get-safety-stats` | Incidents, pre-flight pass rate, compliance |
-| Risk assessment | `assess-risk` | Site risk score, weather, airspace, hazards |
-| Pre-flight check | `run-preflight` | Checklist execution, pass/fail with reasons |
-| Report incident | `report-incident` | Incident record, severity, response actions |
+### Thursday (3 routines, 12 tasks)
 
-### O5 Finance & Invoicing
-
-| Skill | Action | Output |
-|-------|--------|--------|
-| Financial summary | `get-financial-summary` | MTD revenue, outstanding, overdue |
-| Create invoice | `create-invoice` | Invoice from job details (7% VAT) |
-| Send invoice | `send-invoice` | Mark invoice as sent to client |
-| Overdue invoices | `get-overdue-invoices` | All overdue with aging buckets |
-| Record payment | `record-payment` | Payment received against invoice |
-
-### O6 Pilot Operations
-
-| Skill | Action | Output |
-|-------|--------|--------|
-| Available pilots | `get-available-pilots` | Pilots ready, cert status, hours |
-| Assign pilot | `assign-pilot` | Lock pilot to mission |
-| Check certifications | `check-certifications` | Cert expiry dates, auto-ground expired |
-| Log flight hours | `log-flight-hours` | Update pilot flight hour records |
-
-### O7 Data Processing
-
-| Skill | Action | Output |
-|-------|--------|--------|
-| Processing stats | `get-processing-stats` | Queue depth, QA rate, backup status |
-| Create data job | `create-data-job` | New processing job from mission |
-| Register backup | `register-backup` | Record backup copy (4-copy protocol) |
-| Start processing | `start-processing` | Begin data processing pipeline |
-| Mark QA | `mark-qa-complete` | QA passed/failed with findings |
-
-### S1 Market Intelligence
-
-| Skill | Action | Output |
-|-------|--------|--------|
-| Scan opportunities | `scan-opportunities` | New opportunities by sector |
-| Rank opportunities | `rank-opportunities` | Revenue-weighted ranking |
-| Segment analysis | `segment-analysis` | Market context for target segment |
-| Forecast demand | `forecast-demand` | Demand projection by region/segment |
-
-### S2 Partner Strategy
-
-| Skill | Action | Output |
-|-------|--------|--------|
-| Route opportunity | `route-opportunity` | IFS channel or Direct KTV |
-| Evaluate partnership | `evaluate-partnership` | Partnership fit score + terms |
-| Check equity impact | `check-equity-impact` | IFS equity milestone progress |
-| Plan expansion | `plan-expansion` | Territory + partner growth plan |
-
-### S3 Smart Green Product
-
-| Skill | Action | Output |
-|-------|--------|--------|
-| Assess site | `assess-site` | Smart Green readiness score |
-| Design integration | `design-integration` | BMS/CMMS integration flow |
-| Configure telemetry | `configure-telemetry` | ESG sensor + data capture config |
-| Establish baseline | `establish-baseline` | GRESB baseline metrics |
-
-### S4 Financial Model
-
-| Skill | Action | Output |
-|-------|--------|--------|
-| Check guardrails | `check-guardrails` | Deal economics pass/fail |
-| Analyze deal | `analyze-deal` | IRR, NPV, payback, margin |
-| Analyze carbon | `analyze-carbon` | Carbon credit revenue projection |
-| Model expansion | `model-expansion` | CAPEX model for scaling |
-| Model partnership | `model-partnership` | Financial impact of partnership |
-
-### S5 Deal Design
-
-| Skill | Action | Output |
-|-------|--------|--------|
-| Create proposal | `create-proposal` | Client proposal document |
-| Create deck | `create-deck` | Pitch deck for partner/investor |
-| Generate one-pager | `generate-one-pager` | Executive summary document |
-
-### S6 Sales Playbook
-
-| Skill | Action | Output |
-|-------|--------|--------|
-| Prioritize accounts | `prioritise-accounts` | Scored + ranked account list |
-| Create playbook | `create-playbook` | Sector-specific sales playbook |
-| Structure pilot | `structure-pilot` | 90-day paid pilot proposal |
-
-### S7 Ops Compliance
-
-| Skill | Action | Output |
-|-------|--------|--------|
-| Capacity analysis | `capacity-analysis` | Fleet + pilot demand forecast |
-| Assess feasibility | `assess-feasibility` | Mission feasibility score |
-| Plan mission | `plan-mission` | Crew + drone assignment plan |
-| Check CAAT | `check-caat` | CAAT regulatory compliance status |
-
----
-
-## Weekly Routine Schedule (20 Routines, 105 Tasks)
-
-### Monday
-
-| Time | Routine | Teams | Tasks |
-|------|---------|-------|-------|
-| 08:00 | Daily Ops Briefing | All 6 teams | 7 agents report in parallel (via `/cowork daily-ops`) |
-| 09:00 | Weekly Market Scan | Intelligence, Growth | Scan sectors, rank opportunities, route leads, check IFS equity |
-| 10:00 | Weekly Capacity Planning | Delivery, Compliance | Forecast demand, maintenance review, cert check, crew planning |
-| 11:00 | Client Onboarding Pipeline | Growth, Delivery | Welcome sequences, site assessments, contract conversion, channel routing |
-
-### Tuesday
-
-| Time | Routine | Teams | Tasks |
-|------|---------|-------|-------|
-| 09:00 | Partner Pipeline Review | Ecosystem | Partnership proposals, equity tracking, Smart Green adoption, new targets |
-| **09:30** | **Company Agent Marketing Scans** | **Growth, Ecosystem, Intelligence** | **All 13 company marketing agents scan targets → GDrive sync (13 tasks)** |
-| 11:00 | Smart Green ESG Tracking | Ecosystem, Compliance | GRESB indicators, GHG reduction, T-VER credits, ESG compliance matrix |
-| 14:00 | Sales Pipeline Grooming | Growth, Revenue | Score accounts, flag stalled leads, generate proposals, update playbooks |
-
-### Wednesday
-
-| Time | Routine | Teams | Tasks |
-|------|---------|-------|-------|
-| 08:00 | Mid-Week Safety Review | Compliance | WTD incidents, pre-flight analysis, pilot check, compliance gaps |
-| 10:00 | Fleet Optimization | Delivery | Utilization, maintenance optimization, mission efficiency |
-| 11:00 | Shell IoT Station Health | Delivery, Ecosystem | 400-station sensor check, data provenance, offline flags, edge uptime |
-| 14:00 | Recurring Service Scheduling | Delivery, Revenue | Active contracts, next-month slots, retention rate, renewal flags |
-
-### Thursday
-
-| Time | Routine | Teams | Tasks |
-|------|---------|-------|-------|
-| 09:00 | Revenue Operations Review | Revenue, Growth | WTD revenue, collections, deal guardrails, carbon credits, NPS |
-| 11:00 | ESG Report Preparation | Ecosystem, Revenue | ESG certificates, client reports, carbon revenue, disclosure artifacts |
+| Time | Routine | Teams | What Happens |
+|------|---------|-------|--------------|
+| 09:00 | Revenue Review | Revenue, Growth | WTD revenue, collections, deal guardrails, carbon credits, NPS |
+| 11:00 | ESG Report Prep | Ecosystem, Revenue | Per-mission certificates, client reports, carbon revenue, disclosure deadlines |
 | 14:00 | Data Quality Audit | Delivery | 4-copy backup compliance, QA pass rate, ESG certificate status |
 
-### Friday
+### Friday (4 routines, 34 tasks)
 
-| Time | Routine | Teams | Tasks |
-|------|---------|-------|-------|
-| 09:00 | Weekly KPI Aggregation | All 6 teams | All 7 ops agents report KPIs |
-| **10:00** | **Company Agent Sales + Docs Sync** | **Growth, Ecosystem, Revenue, Intelligence** | **All 13 company sales pipelines + strategy docs → GDrive sync (14 tasks)** |
-| 11:00 | Shell IoT Revenue & Tier Report | Revenue, Ecosystem | Base/Standard/Premium tier revenue, upsell candidates, value layers |
-| 17:00 | Weekly Report Distribution | All 6 teams | Push to 8 platforms: Notion, Asana, Airtable, Supabase, Gamma, Canva, GDrive, Email |
+| Time | Routine | Teams | What Happens |
+|------|---------|-------|--------------|
+| 09:00 | KPI Aggregation | All 6 teams | All 7 ops agents report KPIs (fleet, safety, revenue, CRM, pilots, data, jobs) |
+| 10:00 | Company Sales + Docs | Growth, Ecosystem, Revenue, Intelligence | 13 company sales pipelines + all strategy docs → GDrive sync |
+| 11:00 | Shell Revenue Report | Revenue, Ecosystem | Base/Standard/Premium tier tracking, upsell candidates, 7 value layers |
+| 17:00 | Report Distribution | All 6 teams | Push to 8 platforms: Notion, Asana, Airtable, Supabase, Gamma, Canva, GDrive, Email |
 
-### Saturday
+### Weekend (2 routines, 9 tasks)
 
-| Time | Routine | Teams | Tasks |
-|------|---------|-------|-------|
-| 08:00 | Weekend Fleet & Sensor Monitoring | Delivery, Compliance | Fleet snapshot, sensor sync, S3 health, emergency readiness, battery status |
+| Time | Routine | Teams | What Happens |
+|------|---------|-------|--------------|
+| Sat 08:00 | Fleet & Sensor Monitoring | Delivery, Compliance | Fleet snapshot, sensor sync, S3 Object Lock health, emergency readiness |
+| Sun 18:00 | Pre-Week Sync | Delivery, Intelligence | IoT upload verification, dashboard prep, market pre-load, Monday schedule |
 
-### Sunday
-
-| Time | Routine | Teams | Tasks |
-|------|---------|-------|-------|
-| 18:00 | Pre-Week Data Sync & Prep | Delivery, Intelligence | IoT upload verification, dashboard prep, market pre-load, Monday schedule |
+**Plus**: Daily Ops Briefing runs weekdays 08:00 — 7 agents parallel via `/cowork daily-ops`
 
 ---
 
-## Automated Triggers (24/7)
+## 4. Automation
 
-| Trigger | Interval | Agent | Action |
-|---------|----------|-------|--------|
-| `trig-fleet-health` | 5 min | O1 Fleet | Poll 16 drones, flag battery/maintenance |
-| `trig-data-queue` | 5 min | O7 Data | Check queue, flag >48h jobs |
-| `trig-safety-stats` | 10 min | O4 Safety | Aggregate incidents, pre-flight pass rates |
-| `trig-overdue-invoices` | 15 min | O5 Finance | Scan overdue, emit collection events |
-| `trig-crm-pipeline` | 20 min | O3 CRM | Count leads by stage, flag stalled >72h |
-| `trig-cert-check` | 30 min | O6 Pilots | Audit certifications, auto-ground expired |
+### Triggers (24/7)
 
----
+| Trigger | Interval | Agent | Monitors |
+|---------|:--------:|-------|----------|
+| `trig-fleet-health` | 5 min | O1 | Drone availability, battery, maintenance alerts |
+| `trig-data-queue` | 5 min | O7 | Processing backlog, flag jobs >48h |
+| `trig-safety-stats` | 10 min | O4 | Incident counts, pre-flight pass rates |
+| `trig-overdue-invoices` | 15 min | O5 | Past-due invoices, escalation triggers |
+| `trig-crm-pipeline` | 20 min | O3 | Lead aging, stage bottlenecks, stalled >72h |
+| `trig-cert-check` | 30 min | O6 | Cert expiry, auto-ground enforcement |
 
-## Event-Driven Workflows (10 Core + 5 Connected)
+### Workflows (10 Core)
 
-| Event | Workflow | Agents | What Happens |
-|-------|----------|--------|-------------|
-| New lead | `wf-lead-to-client` | O3, O2 | Qualify → create job |
-| Job contracted | `wf-mission-prep` | O4, O1, O6, O2 | Risk → weather → drone → pilot → advance |
-| Pre-flight passes | `wf-preflight-to-mission` | O4, O1 | Launch mission |
-| Mission completes | `wf-post-mission` | O7, O1 | Release drone → data job → 4 backups → process → QA |
-| Data QA passes | `wf-delivery-to-payment` | O7, O5 | Delivery → invoice → send |
-| Invoice overdue | `wf-overdue-collection` | O5 | Pull overdue → escalate |
-| Safety incident | `wf-incident-response` | O4, O1, O6 | Safety → fleet → cert check |
-| Maintenance due | `wf-maintenance-auto` | O1 | Ground drone → schedule |
-| Cert expiring | `wf-cert-expiry` | O6, O4 | Audit → safety review |
-| New lead (connected) | `wf-connected-lead-onboard` | O3 | Gmail welcome + Calendar meeting |
-| Mission launch (connected) | `wf-connected-mission-brief` | O1 | Gmail briefing + Calendar event |
-| Invoice sent (connected) | `wf-connected-invoice-email` | O5 | Gmail invoice to client |
-| Safety incident (connected) | `wf-connected-safety-alert` | O4 | Gmail URGENT alert |
-| Cert expiring (connected) | `wf-connected-cert-expiry` | O6 | Gmail + Calendar deadline |
+| Trigger Event | Workflow | Pipeline |
+|---------------|----------|----------|
+| Lead created | `wf-lead-to-client` | O3 qualify → O2 create job |
+| Job contracted | `wf-mission-prep` | O4 risk → weather → O1 drone → O6 pilot → O2 advance |
+| Pre-flight passes | `wf-preflight-to-mission` | O4 clear → O1 launch |
+| Mission completes | `wf-post-mission` | O1 release → O7 data job → 4 backups → process → QA |
+| Data QA passes | `wf-delivery-to-payment` | O7 deliver → O5 invoice → send |
+| Invoice overdue | `wf-overdue-collection` | O5 pull overdue → escalate |
+| Safety incident | `wf-incident-response` | O4 → O1 fleet check → O6 cert check |
+| Maintenance due | `wf-maintenance-auto` | O1 ground → schedule |
+| Cert expiring | `wf-cert-expiry` | O6 audit → O4 safety review |
+| Platform start | `wf-cowork-daily-briefing` | 7 agents report in parallel |
 
----
+### Connected Apps (9 Automations)
 
-## Connected App Automations (9 Total)
-
-| # | Automation | Trigger | Gmail | Calendar |
-|---|-----------|---------|-------|----------|
-| 1 | Client welcome | New lead qualified | Welcome email | Intro meeting |
-| 2 | Mission briefing | Pre-flight passes | Crew briefing | Mission block |
-| 3 | Invoice delivery | Invoice created | Invoice email | Payment due |
-| 4 | Safety alert | Incident reported | URGENT alert | Review meeting |
-| 5 | Cert expiry warning | Cert <30 days | Warning email | Training deadline |
-| 6 | Overdue follow-up | Invoice >30 days | Reminder email | — |
-| 7 | Daily ops summary | Daily-ops completes | Summary email | — |
-| 8 | Weekly report | Friday 17:00 | Report email | — |
-| 9 | Maintenance notice | Drone grounded | Notice email | Maintenance block |
+| Trigger | Gmail | Calendar |
+|---------|-------|----------|
+| Lead qualified | Welcome email | Intro meeting |
+| Pre-flight passes | Crew briefing | Mission block |
+| Invoice created | Invoice to client | Payment due date |
+| Incident reported | URGENT alert | Review meeting |
+| Cert <30 days | Warning email | Training deadline |
+| Invoice >30 days | Reminder email | — |
+| Daily ops complete | Summary email | — |
+| Friday 17:00 | Weekly report | — |
+| Drone grounded | Maintenance notice | Maintenance block |
 
 ---
 
-## CoWork Commands
+## 5. Delivery Pipeline
 
-| Command | ID | Description | Teams | Mode |
-|---------|-----|------------|-------|------|
-| `/cowork full-cycle` | `cowork-full-cycle` | Market → lead → mission → delivery → payment | Intelligence, Growth, Delivery, Revenue | Sequential |
-| `/cowork new-partner` | `cowork-new-partner` | Evaluate → pitch → onboard partnership | Intelligence, Ecosystem, Revenue | Sequential |
-| `/cowork daily-ops` | `cowork-daily-ops` | Morning briefing: all teams report | Compliance, Delivery, Revenue, Growth | Parallel |
-| `/cowork scale-up` | `cowork-scale-up` | Capacity expansion planning | Intelligence, Delivery, Compliance, Revenue, Ecosystem | Sequential |
-| `/cowork smart-green` | `cowork-smart-green` | Smart Green platform deployment | Ecosystem, Delivery, Compliance, Intelligence | Sequential |
+```
+TRIGGER                          EXECUTION                        OUTPUT
+─────────────────────────────────────────────────────────────────────────────
+6 Triggers (24/7)  ──┐
+20 Routines (weekly) ─┤─→ EventBus ─→ WorkflowEngine ─→ Agents ─→ Results
+46 Event types ───────┤              ├─→ OperationsBrain          ├─→ Supabase (real-time)
+5 CoWork commands ────┘              └─→ Connected Apps            ├─→ Google Drive (39 files)
+                                         (Gmail + Calendar)        ├─→ 8 platforms (Friday)
+                                                                   └─→ Supervisor ratings
+```
 
----
+### Weekly GDrive Sync
 
-## KPI Targets
+- **Tuesday 09:30**: 13 marketing scans → `{Company}-Marketing-Strategy.md`
+- **Friday 10:00**: 13 sales pipelines → `{Company}-Sales-Pipeline.md` + 13 strategy masters synced
 
-| KPI | Agent | Target |
-|-----|-------|--------|
-| Fleet Utilization | O1 | ≥70% |
-| Fleet Availability | O1 | ≥90% |
-| Missions Completed | O2 | Per pipeline |
-| Avg Cycle Time | O2 | ≤3.2 days |
-| Pre-flight Pass Rate | O4 | ≥95% |
-| Days Without Incident | O4 | 365 continuous |
-| Gross Revenue | O5 | THB 180.18M/yr |
-| EBITDA Margin | O5 | ≥77.7% |
-| Invoice DSO | O5 | ≤30 days |
-| Total Leads | O3 | ≥50/week |
-| Conversion Rate | O3 | ≥25% |
-| NPS Score | O3 | ≥50 |
-| Pilot Cert Compliance | O6 | 100% |
-| Backup Compliance | O7 | 100% |
-| QA Pass Rate | O7 | ≥97% |
-| GHG Reduction | S3 | ≥96% |
-| Carbon Credits | S4 | Active |
+### Friday Report Distribution (17:00)
+
+| Platform | Format | Content |
+|----------|--------|---------|
+| Notion | Markdown page | Full ops report — KPIs, alerts, agent status |
+| Asana | Markdown + JSON | Team tasks — completed + next week |
+| Airtable | JSON records | KPI snapshot — all metrics by team |
+| Supabase | JSON (real-time) | Dashboard — agent health, KPIs, decisions |
+| Gamma | Markdown slides | Weekly presentation for management |
+| Canva | Markdown | Pitch content with latest numbers |
+| Google Drive | Markdown file | Master weekly report + company strategies |
+| Email | HTML | Summary to Matthew, Thanvarat, Krit |
 
 ---
 
-## Report Distribution (8 Platforms)
+## 6. KPI Targets
 
-| # | Platform | Format | Content |
-|---|----------|--------|---------|
-| 1 | Notion | Markdown | Full ops report — KPIs, alerts, agent status |
-| 2 | Asana | Markdown + JSON | Team tasks — completed + next week |
-| 3 | Airtable | JSON | KPI snapshot — all metrics by team |
-| 4 | Supabase | JSON (real-time) | Dashboard — agent health, KPIs, decisions |
-| 5 | Gamma | Markdown slides | Weekly presentation for management |
-| 6 | Canva | Markdown | Pitch content with latest numbers |
-| 7 | Google Drive | Markdown | Master weekly report document |
-| 8 | Email | HTML | Summary to Matthew, Thanvarat, Krit |
-
-**Output**: `docs/reports/{platform}/weekly-YYYY-MM-DD.*`
+| KPI | Agent | Target | Frequency |
+|-----|-------|--------|-----------|
+| Fleet Utilization | O1 | >=70% | Weekly (Wed) |
+| Fleet Availability | O1 | >=90% | Daily |
+| Pre-flight Pass Rate | O4 | >=95% | Weekly (Wed) |
+| Days Without Incident | O4 | 365 continuous | Daily |
+| Gross Revenue | O5 | THB 180.18M/yr | Weekly (Thu) |
+| EBITDA Margin | O5 | >=77.7% | Weekly (Thu) |
+| Invoice DSO | O5 | <=30 days | Weekly (Thu) |
+| Leads per Week | O3 | >=50 | Weekly (Tue) |
+| Conversion Rate | O3 | >=25% | Weekly (Tue) |
+| NPS Score | O3 | >=50 | Weekly (Thu) |
+| Pilot Cert Compliance | O6 | 100% | Daily (trigger) |
+| Backup Compliance | O7 | 100% | Weekly (Thu) |
+| QA Pass Rate | O7 | >=97% | Weekly (Thu) |
+| GHG Reduction | S3 | >=96% | Weekly (Tue) |
+| Carbon Credits | S4 | Active | Weekly (Thu) |
 
 ---
 
-## Supervisor Ratings
+## 7. CoWork Commands
 
-The `AgentSupervisor` rates each agent automatically:
+| Command | What It Does | Teams | Steps |
+|---------|-------------|-------|:-----:|
+| `/cowork daily-ops` | Morning briefing — all teams report status, KPIs, blockers | 4 teams parallel | 6 |
+| `/cowork full-cycle` | End-to-end: market scan → qualify → mission → deliver → invoice | 4 teams sequential | 7 |
+| `/cowork new-partner` | Evaluate → model financials → pitch → sales playbook | 3 teams sequential | 5 |
+| `/cowork scale-up` | Demand forecast → capacity gap → hiring → capex → partners | 5 teams sequential | 5 |
+| `/cowork smart-green` | Site assessment → BMS integration → telemetry → ESG baseline | 4 teams sequential | 5 |
 
-| Rating | Criteria |
-|--------|----------|
-| **critical** | Status `error` OR >5 errors |
-| **needs-attention** | Status `offline` OR completion <80% |
-| **good** | Completion rate ≥80% |
-| **excellent** | Completion rate ≥95% |
+---
+
+## 8. Integrations
+
+| Platform | Module | Purpose | Auth |
+|----------|--------|---------|------|
+| Google Drive | `gdrive.ts` | Company strategy docs, weekly reports | `GDRIVE_ACCESS_TOKEN` |
+| Notion | `notion.ts` | Workspace pages, agent snapshots, KPI DB | `NOTION_API_KEY` |
+| Asana | `asana.ts` | Project/task management per team | `ASANA_ACCESS_TOKEN` |
+| Airtable | `airtable.ts` | Agent status records, KPI snapshots | `AIRTABLE_API_KEY` + `AIRTABLE_BASE_ID` |
+| Supabase | `supabase.ts` | Real-time dashboard, telemetry, decisions | `SUPABASE_URL` + `SUPABASE_ANON_KEY` |
+| Gamma | `gamma.ts` | AI pitch decks, investor reports, ESG decks | `GAMMA_API_KEY` |
+| Canva | `canva.ts` | Pitch content, branded presentations | `CANVA_ACCESS_TOKEN` |
+| LINE | `line-connector.ts` | Thai customer messaging (in-memory) | None |
+| Odoo | `external-systems.ts` | ERP — contacts, invoices, inventory | Hardcoded defaults |
+| AWS S3 | `external-systems.ts` | Data storage, Object Lock (7yr GOVERNANCE) | Hardcoded defaults |
+| DJI FlightHub | `external-systems.ts` | Fleet telemetry, flight plans | Hardcoded defaults |
+
+---
+
+## 9. Supervisor
+
+Rates every agent on each scan:
+
+| Rating | Rule |
+|--------|------|
+| **excellent** | Completion rate >=95% |
+| **good** | Completion rate >=80% |
+| **needs-attention** | Offline OR completion <80% |
+| **critical** | Error state OR >5 errors |
 
 **System health**: healthy → degraded (>2 need attention) → warning (any critical) → critical (>2 critical)
 
 ---
 
-## How All Workflows Are Delivered
+## 10. Source Files
 
-Every workflow in the system is delivered through a layered execution pipeline. Here is the end-to-end path from trigger to output:
-
-### Execution Pipeline
-
-```
-1. TRIGGER (event or schedule)
-   ├── Automated Triggers (6) — run 24/7 at 5-30 min intervals
-   ├── Weekly Routines (20) — scheduled Mon-Sun per WEEKLY_ROUTINES array
-   ├── Business Events (46 types) — emitted by agents via EventBus
-   └── CoWork Commands (5) — invoked manually via /cowork
-
-2. EVENT BUS (src/workflows/event-bus.ts)
-   └── Routes events to registered workflow handlers
-
-3. WORKFLOW ENGINE (src/workflows/engine.ts)
-   ├── Resolves workflow steps in sequence or parallel
-   ├── Each step dispatches to a specific agent + action
-   ├── Passes output from step N as input to step N+1
-   └── Retries failed steps (configurable)
-
-4. OPERATIONS BRAIN (src/workflows/brain.ts)
-   ├── Central decision engine — evaluates workflow outputs
-   ├── Applies business rules (CAAT, financial guardrails, safety)
-   └── Logs decisions to Supabase brain_decisions table
-
-5. AGENT EXECUTION (src/agents/*.ts)
-   ├── Operations agents (O1-O7) execute physical/data operations
-   ├── Strategy agents (S1-S7) analyze, plan, and recommend
-   ├── Company agents (13) run marketing scans, sales updates, doc syncs
-   └── Each agent returns typed results via AgentMessage
-
-6. CONNECTED APPS (src/workflows/connected-apps.ts)
-   ├── Gmail — 7 email templates auto-sent on workflow events
-   └── Calendar — 6 event templates auto-created on scheduling events
-
-7. OUTPUT & DISTRIBUTION
-   ├── Google Drive — 39 company strategy files synced weekly (Tue + Fri)
-   ├── Supabase — real-time dashboard updates (agent_status, kpi_snapshots)
-   ├── 8-Platform Friday Report — Notion, Asana, Airtable, Supabase, Gamma, Canva, GDrive, Email
-   └── AgentSupervisor — productivity ratings logged per agent/team
-```
-
-### Workflow Delivery by Category
-
-| Category | Count | How Delivered | Frequency |
-|----------|-------|---------------|-----------|
-| Core Workflows | 10 | EventBus → WorkflowEngine → agents → brain decisions | On business events (real-time) |
-| Connected App Workflows | 5 | EventBus → Gmail/Calendar templates → auto-send | On business events (real-time) |
-| Automated Triggers | 6 | TriggerManager → poll agents → emit events if thresholds hit | Every 5-30 min (24/7) |
-| Weekly Routines (Core) | 18 | CoWork scheduler → agent tasks → output keys → report tracker | Mon-Sun per schedule |
-| Weekly Routines (Company) | 2 | CoWork scheduler → 13 company agents → GDrive sync | Tue 09:30 + Fri 10:00 |
-| CoWork Commands | 5 | Manual `/cowork` → CoworkOrchestrator → multi-team sequence | On demand |
-| Daily Ops Briefing | 1 | CoWork workflow → 7 agents parallel → summary | Weekdays 08:00 |
-| Friday Report Distribution | 1 | AutomatedReportingOrchestrator → 8 platforms in parallel | Fridays 17:00 |
-| Company Strategy Sync | 1 | Company agents → GDriveClient → 13 folders, 39 files | Fridays 10:00 |
-| Supervisor Monitoring | 1 | AgentSupervisor → scan all 14 agents → ratings + alerts | Continuous |
-
-### Google Drive Delivery Flow (Company Strategies)
-
-```
-Tuesday 09:30 — Marketing Scan
-  13 company marketing sub-agents run scan-company-intel
-  → Each produces market intelligence report
-  → GDriveClient uploads {Company}-Marketing-Strategy.md to company folder
-  → Results stored in CoWork WeeklyReportTracker
-
-Friday 10:00 — Sales Pipeline + Docs Sync
-  13 company sales sub-agents run update-pipeline
-  → Each produces pipeline status update
-  → GDriveClient uploads {Company}-Sales-Pipeline.md
-  → 1 bulk task syncs all {Company}-Strategy-Master.md files
-  → Total: 39 files across 13 Google Drive folders updated weekly
-```
-
-### 8-Platform Report Flow (Friday 17:00)
-
-```
-WeeklyReportTracker.generateWeeklySummary()
-  → AutomatedReportingOrchestrator.distributeReport()
-    ├── Notion    → createPage(markdown)           — full ops report
-    ├── Asana     → createTask(markdown + JSON)     — team tasks
-    ├── Airtable  → upsertRecord(JSON)             — KPI snapshot
-    ├── Supabase  → upsert(JSON)                   — real-time dashboard
-    ├── Gamma     → generateFromOutline(markdown)   — management slides
-    ├── Canva     → pushContent(markdown)           — pitch deck update
-    ├── GDrive    → uploadTextFile(markdown)        — master report
-    └── Email     → sendTemplate(HTML)              — leadership summary
-```
-
----
-
-## Source Files
-
-| File | Purpose |
-|------|---------|
+| File | What |
+|------|------|
 | `src/agents/base-agent.ts` | Abstract `KtvAgent` base class |
-| `src/agents/fleet-management.ts` | O1 Fleet Management Agent |
-| `src/agents/job-lifecycle.ts` | O2 Job Lifecycle Agent |
-| `src/agents/crm-sales.ts` | O3 CRM & Sales Agent |
-| `src/agents/safety-compliance.ts` | O4 Safety & Compliance Agent |
-| `src/agents/finance-invoicing.ts` | O5 Finance & Invoicing Agent |
-| `src/agents/pilot-operations.ts` | O6 Pilot Operations Agent |
-| `src/agents/data-processing.ts` | O7 Data Processing Agent |
-| `src/agents/orchestrator.ts` | `KtvOrchestrator` — routes messages, health checks |
-| `src/agents/supervisor.ts` | `AgentSupervisor` — productivity monitor |
-| `src/agents/company-agents.ts` | 13 company agents, 39 sub-agents, GDrive sync |
-| `src/agents/index.ts` | All agent exports (core + company) |
-| `src/mastermind/main.py` | S1-S7 Strategy agent entry point |
-| `src/mastermind/orchestrator.py` | Mastermind parallel orchestration |
-| `src/mastermind/prompts.py` | Agent system prompts |
-| `src/workflows/cowork.ts` | 6 teams, 5 commands, 20 routines, 105 tasks |
-| `src/workflows/connected-apps.ts` | 9 automations, 7 email + 6 calendar templates |
+| `src/agents/fleet-management.ts` | O1 |
+| `src/agents/job-lifecycle.ts` | O2 |
+| `src/agents/crm-sales.ts` | O3 |
+| `src/agents/safety-compliance.ts` | O4 |
+| `src/agents/finance-invoicing.ts` | O5 |
+| `src/agents/pilot-operations.ts` | O6 |
+| `src/agents/data-processing.ts` | O7 |
+| `src/agents/orchestrator.ts` | Message routing, health checks (60s) |
+| `src/agents/supervisor.ts` | Productivity monitoring, ratings, alerts |
+| `src/agents/company-agents.ts` | 13 company agents, 39 sub-agents |
+| `src/agents/index.ts` | All exports (core + company) |
+| `src/mastermind/main.py` | S1–S7 strategy agents (Python) |
+| `src/mastermind/orchestrator.py` | Parallel strategy orchestration |
+| `src/workflows/cowork.ts` | Teams, commands, routines, report tracker |
+| `src/workflows/routine-prompts.ts` | 20 routine prompts, 107 task prompts |
+| `src/workflows/connected-apps.ts` | Gmail/Calendar templates, 9 automations |
 | `src/workflows/definitions.ts` | 10 core workflow definitions |
-| `src/workflows/triggers.ts` | 6 automated triggers (5-30 min) |
+| `src/workflows/triggers.ts` | 6 automated triggers |
 | `src/workflows/brain.ts` | OperationsBrain — decision engine |
 | `src/workflows/engine.ts` | WorkflowEngine — step execution |
-| `src/workflows/event-bus.ts` | EventBus — pub/sub events |
-| `src/integrations/gdrive.ts` | Google Drive client — company strategy sync |
-| `docs/COWORK.md` | Complete CoWork upload reference |
+| `src/workflows/event-bus.ts` | EventBus — 46 event types, pub/sub |
+| `src/integrations/gdrive.ts` | Google Drive client |
+| `docs/COWORK.md` | Full CoWork upload reference |
 
 ---
 
-## How to Run
+## Quick Start
 
 ```bash
-# Start platform (all agents + triggers)
-npm run start
+npm run start              # Platform + all agents + triggers
+npm run build              # tsc → dist/
+npm test                   # 94/94 tests
+npm run lint               # tsc --noEmit (type check only)
 
-# CoWork commands
 claude -p '/cowork daily-ops'
 claude -p '/cowork full-cycle'
-claude -p '/cowork new-partner'
-claude -p '/cowork scale-up'
-claude -p '/cowork smart-green'
-
-# Generate weekly report
-npm run build && node dist/scripts/demo-full-report.js
-
-# Build and test
-npm run build          # tsc → dist/
-npm test               # 94/94 tests
-npm run lint           # type checking
-
-# View reports
-ls docs/reports/*/weekly-*
 ```

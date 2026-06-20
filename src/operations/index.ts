@@ -19,3 +19,6 @@ export type { OperationalKPIs, ExecutiveSummary, GrowthTracker, ServiceLineRepor
 
 export { AutomatedReportingOrchestrator, createReportingOrchestrator } from './automated-reporting.js';
 export type { ReportDistributionResult, WeeklyReportInput, AutomatedReportResult } from './automated-reporting.js';
+
+export { OutputPusher, getOutputPusher, createOutputPusher } from './output-pusher.js';
+export type { TaskOutput, PushResult, OutputPushResult, OutputChannel, OutputCategory } from './output-pusher.js';
